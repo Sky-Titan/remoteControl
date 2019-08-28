@@ -26,24 +26,19 @@ import org.techtown.remotecontrol.R;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
-    Button confirm;
-    TextView information;
-    TextView title;
 
     MainFragment mainFragment;
     SettingFragment settingFragment;
-    EditText ip_address;
-    EditText port_number;
 
     DrawerLayout drawer;
-    String ip,port;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mainFragment= new MainFragment();
         settingFragment = new SettingFragment();
+        mainFragment= new MainFragment();
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP)
         {
@@ -64,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_home,new MainFragment()).commit();
+        fragmentManager.beginTransaction().replace(R.id.content_home, settingFragment).commit();
     }
 
 
@@ -83,11 +78,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         int id = menuItem.getItemId();
         FragmentManager fragmentManager = getSupportFragmentManager();
-        if (id == R.id.main_nav) {
-            Fragment fragment = mainFragment;
-            fragmentManager.beginTransaction().replace(R.id.content_home, fragment).commit();
-        } else if (id == R.id.setting_nav) {
+
+        if (id == R.id.setting_nav) {
             Fragment fragment = settingFragment;
+            fragmentManager.beginTransaction().replace(R.id.content_home, fragment).commit();
+        }
+        else if (id == R.id.main_nav) {
+            Fragment fragment = mainFragment;
             fragmentManager.beginTransaction().replace(R.id.content_home, fragment).commit();
         }
 
