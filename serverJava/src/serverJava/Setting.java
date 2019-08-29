@@ -2,10 +2,14 @@ package serverJava;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.MouseInfo;
+import java.awt.PointerInfo;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.EOFException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -33,6 +37,8 @@ public class Setting extends JFrame
 	private JButton connect;
 	private JLabel client_ip,client_ip2, client_port,client_port2;
 	private JLabel receive_info,receive_info2;
+	ServerSocket serverSocket;
+	int count = 0;
 	
 	public Setting() {
 		super("PC remote");
@@ -53,18 +59,15 @@ public class Setting extends JFrame
 		port_number.setText("5001");
 		port_number.setBounds(50, 100, 200, 25);
 		port_number.setBackground(Color.WHITE);
-		port_number.setVisible(true);
 		add(port_number);
 		
 		certify_info = new JLabel("인증코드 :");
 		certify_info.setBounds(50, 130, 100, 50);
-		certify_info.setVisible(true);
 		add(certify_info);
 		
 		certify_number = new JTextField("2081",1);
 		certify_number.setBounds(50, 180, 200, 25);
 		certify_number.setBackground(Color.WHITE);
-		certify_number.setVisible(true);
 		add(certify_number);
 	
 		client_ip = new JLabel("클라이언트 ip :");
@@ -110,7 +113,7 @@ public class Setting extends JFrame
 		{
 			int port = Integer.parseInt(port_number.getText());
 			System.out.println("Java server start....");
-			ServerSocket serverSocket = new ServerSocket(port);
+			serverSocket = new ServerSocket(port);
 
 			System.out.println("reading from port....");
 			Robot robot = new Robot();
@@ -120,10 +123,22 @@ public class Setting extends JFrame
 				InetAddress clientHost = sock.getLocalAddress();
 				int clientPort = sock.getPort();
 				System.out.println("Client connect host : "+clientHost+" port: "+clientPort);
+				ObjectInputStream inputStream;
+				java.lang.Object obj;
 				
-				ObjectInputStream inputStream = new ObjectInputStream(sock.getInputStream());
-				java.lang.Object obj = inputStream.readObject();
 				
+				try 
+				{
+					inputStream = new ObjectInputStream(sock.getInputStream());
+					obj = inputStream.readObject();
+				}
+				catch(Exception e)
+				{
+					if(!sock.isClosed())
+						sock.close();
+					System.out.println("exception 발생");
+					continue;
+				}
 				String receive = String.valueOf(obj);
 				StringTokenizer strtok = new StringTokenizer(receive, "&");
 				
@@ -131,13 +146,14 @@ public class Setting extends JFrame
 				String code = strtok.nextToken();
 				
 				System.out.println("input : "+key);
-				ObjectOutputStream outputStream = new ObjectOutputStream(sock.getOutputStream());
 				
+				boolean isConnect = true;
 			
 				
 				if(!code.equals(certify_number.getText())) //수신한 인증코드와 입력한 인증코드가 같지 않으면 처리 x
 				{
 					receive_info2.setText("인증코드 에러");
+					sock.close();
 					continue;
 				}
 				else
@@ -187,16 +203,52 @@ public class Setting extends JFrame
 				{
 					robot.keyPress(KeyEvent.VK_DOWN);
 				}
-		
+				else if(key.equals("MOUSE DRAG"))
+				{
+					String position = strtok.nextToken();
+					strtok = new StringTokenizer(position,"|");
+					
+					int x = Integer.parseInt(strtok.nextToken());
+					int y = Integer.parseInt(strtok.nextToken());
+					
+					PointerInfo pointerInfo = MouseInfo.getPointerInfo();
+					
+					robot.mouseMove(x + (int)pointerInfo.getLocation().getX(), y + (int)pointerInfo.getLocation().getY());
+				}
+				else if(key.equals("MOUSE LEFT"))
+				{
+					robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+					robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+				}
+				else if(key.equals("MOUSE WHEEL BTN"))
+				{
+					robot.mousePress(InputEvent.BUTTON2_DOWN_MASK);
+					robot.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
+				}
+				else if(key.equals("MOUSE RIGHT"))
+				{
+					robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
+					robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
+				}
+				
+				ObjectOutputStream outputStream = new ObjectOutputStream(sock.getOutputStream());
 				outputStream.writeObject(key+" Complete from server");
 				outputStream.flush();
 				sock.close();
+				count++;
+				if(count == 10)
+				{
+					serverSocket.close();
+					serverSocket = new ServerSocket(port);
+					count=0;
+				}
 			}
 		
 		}
 		catch(Exception e)
 		{
-			
+			e.printStackTrace();
+			System.out.println("exception 발생 22");
 		}
 	}
 	private String getLocalServerIp()

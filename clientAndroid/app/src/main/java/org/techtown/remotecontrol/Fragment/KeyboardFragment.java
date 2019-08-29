@@ -73,22 +73,6 @@ public class KeyboardFragment extends Fragment implements View.OnClickListener {
 
         Button left_btn = (Button) view.findViewById(R.id.left_btn);
         left_btn.setOnClickListener(this);
-        //확인 버튼
-     /*   confirm = (Button) view.findViewById(R.id.connectButton_ipconfig);
-        confirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if(ip_address.getText().toString().equals("") || port_number.getText().toString().equals(""))//주소비었는지확인
-                {
-                    Toast.makeText(getContext(),"정보를 입력해주십시오",Toast.LENGTH_SHORT).show();
-                }
-                else//입력이 있다면
-                {
-
-                }
-            }
-        });*/
 
         return view;
     }
@@ -137,13 +121,6 @@ public class KeyboardFragment extends Fragment implements View.OnClickListener {
 
         });
         thread.start();
-        switch (view.getId())
-        {
-            case R.id.enter_btn://ENTER
 
-
-
-                break;
-        }
     }
 }
