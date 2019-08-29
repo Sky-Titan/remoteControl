@@ -55,17 +55,64 @@
 
         <TextView
             android:id="@+id/information1"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:textAlignment="center"
             android:textColor="@color/red"
             android:text="PC의 외부 IP주소,\nPC에서 설정한 포트번호, 인증코드를 입력하십시오."
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textColor="@color/black"
+                    android:text="마우스 감도"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <NumberPicker
+                    android:id="@+id/mouse_sensitivity_picker"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></NumberPicker>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textColor="@color/black"
+                    android:text="휠 감도"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <NumberPicker
+                    android:id="@+id/wheel_sensitivity_picker"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></NumberPicker>
+            </LinearLayout>
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/information2"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:text="입력한 정보들은 변경 전까지\n자동으로 기억 됩니다."

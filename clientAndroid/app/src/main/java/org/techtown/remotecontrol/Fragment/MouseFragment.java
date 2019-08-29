@@ -1,6 +1,7 @@
 package org.techtown.remotecontrol.Fragment;
 
 
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,14 +32,15 @@ public class MouseFragment extends Fragment {
 
     private String TAG = "MouseFragment";
 
-    LinearLayout touchlayout;
+    LinearLayout touchlayout;//마우스 터치 레이아웃
 
-    int first_X,first_Y,current_X,current_Y,value_X=0,value_Y=0;
+    int first_X,first_Y,current_X,current_Y,value_X=0,value_Y=0;//마우스 커서용
+    int first_wheel_Y,current_wheel_Y,wheel_value_Y = 0;//휠 용
 
     ObjectOutputStream outputStream;
     ObjectInputStream inputStream;
     int port ;
-    String ip = "220.122.13.177";
+    String ip = "";
     Socket sock=null;
 
     String msg_1="";//서버에서 받은 리턴 메시지
@@ -46,6 +48,7 @@ public class MouseFragment extends Fragment {
     boolean isFinished = true ; //스레드 여러 개 생성 못하게 하기 위한 장치
 
     Button left,wheel,right;
+    Button wheel_up,wheel_down,wheel_bar;
 
     public MouseFragment() {
         // Required empty public constructor
@@ -58,27 +61,128 @@ public class MouseFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_mouse, container, false);
 
-        left = (Button) view.findViewById(R.id.mouse_left_btn);
-        left.setOnClickListener(new View.OnClickListener() {
+        wheel_up = (Button) view.findViewById(R.id.mouse_wheel_up);//마우스 휠 업
+        wheel_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendEvent("MOUSE LEFT");//마우스 왼쪽버튼
+                sendEvent("MOUSE WHEEL UP");
+            }
+        });
+
+        wheel_down = (Button) view.findViewById(R.id.mouse_wheel_down);//마우스 휠 다운
+        wheel_down.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendEvent("MOUSE WHEEL DOWN");
+            }
+        });
+
+        wheel_bar = (Button) view.findViewById(R.id.mouse_wheel_bar);//마우스 휠 드래그 바
+        wheel_bar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                int eventaction = motionEvent.getAction();
+
+                //DOWN -> MOVE -> UP
+                switch (eventaction)
+                {
+                    case MotionEvent.ACTION_UP://터치 뗄 때
+                        break;
+                    case MotionEvent.ACTION_MOVE://터치 드래그할때
+
+                        current_wheel_Y = (int)motionEvent.getY();
+                        Log.d(TAG,"current_wheel_y : "+current_wheel_Y);
+
+                        wheel_value_Y = (current_wheel_Y - first_wheel_Y);
+
+                        first_wheel_Y = current_wheel_Y;
+
+                        if(isFinished)
+                        {
+                            sendEvent("MOUSE WHEEL DRAG");//drag 신호 보냄
+                            isFinished=false;
+                        }
+                        break;
+                    case MotionEvent.ACTION_DOWN://터치 했을 때 좌표
+                        first_wheel_Y = (int) motionEvent.getY();//첫 터치한 Y 좌표
+                        Log.d(TAG,"first_wheel_y : "+first_wheel_Y);
+
+                        break;
+                }
+
+                return true;
+            }
+        });
+        left = (Button) view.findViewById(R.id.mouse_left_btn);
+        left.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                int eventaction = motionEvent.getAction();
+
+                //DOWN -> MOVE -> UP
+                switch (eventaction)
+                {
+                    case MotionEvent.ACTION_UP://터치 뗄 때
+                        sendEvent("MOUSE LEFT RELEASE");
+                        break;
+                    case MotionEvent.ACTION_MOVE://터치 드래그할때
+                        break;
+                    case MotionEvent.ACTION_DOWN://터치 했을 때 좌표
+                        sendEvent("MOUSE LEFT PRESS");
+                        break;
+                }
+
+                return true;
             }
         });
 
         wheel = (Button) view.findViewById(R.id.mouse_wheel_btn);
-        wheel.setOnClickListener(new View.OnClickListener() {
+        wheel.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                sendEvent("MOUSE WHEEL BTN");
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                int eventaction = motionEvent.getAction();
+
+                //DOWN -> MOVE -> UP
+                switch (eventaction)
+                {
+                    case MotionEvent.ACTION_UP://터치 뗄 때
+                        sendEvent("MOUSE WHEEL RELEASE");
+                        break;
+                    case MotionEvent.ACTION_MOVE://터치 드래그할때
+                        break;
+                    case MotionEvent.ACTION_DOWN://터치 했을 때 좌표
+                        sendEvent("MOUSE WHEEL PRESS");
+                        break;
+                }
+
+                return true;
             }
         });
 
         right = (Button) view.findViewById(R.id.mouse_right_btn);
-        right.setOnClickListener(new View.OnClickListener() {
+        right.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View view) {
-                sendEvent("MOUSE RIGHT");//마우스 오른쪽버튼
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+                int eventaction = motionEvent.getAction();
+
+                //DOWN -> MOVE -> UP
+                switch (eventaction)
+                {
+                    case MotionEvent.ACTION_UP://터치 뗄 때
+                        sendEvent("MOUSE RIGHT RELEASE");
+                        break;
+                    case MotionEvent.ACTION_MOVE://터치 드래그할때
+                        break;
+                    case MotionEvent.ACTION_DOWN://터치 했을 때 좌표
+                        sendEvent("MOUSE RIGHT PRESS");
+                        break;
+                }
+
+                return true;
             }
         });
 
@@ -144,6 +248,9 @@ public class MouseFragment extends Fragment {
                try
                 {
                     Myapplication myapplication = (Myapplication)getActivity().getApplication();
+
+                    int sensitivity = myapplication.getMouseSensitivity();//마우스감도
+                    int wheel_sensitivity = myapplication.getMouseWheelSensitivity();//휠감도
                     ip = myapplication.getIp();
                     port = myapplication.getPort();
                     String code = myapplication.getCertifyNumber();
@@ -154,13 +261,25 @@ public class MouseFragment extends Fragment {
                     outputStream = new ObjectOutputStream(sock.getOutputStream());
 
                     if(motion.equals("MOUSE DRAG"))
-                        outputStream.writeObject("MOUSE DRAG" + "&" + code + "&" + value_X + "|" + value_Y );//서버로 전송
-                    else if(motion.equals("MOUSE LEFT"))
-                        outputStream.writeObject("MOUSE LEFT" + "&" + code);//서버로 전송
-                    else if(motion.equals("MOUSE WHEEL BTN"))
-                        outputStream.writeObject("MOUSE WHEEL BTN" + "&" + code);//서버로 전송
-                    else if(motion.equals("MOUSE RIGHT"))
-                        outputStream.writeObject("MOUSE RIGHT" + "&" + code);//서버로 전송
+                        outputStream.writeObject("MOUSE DRAG" + "&" + code + "&" + value_X * sensitivity+ "|" + value_Y * sensitivity );//서버로 전송
+                    else if(motion.equals("MOUSE LEFT PRESS"))//마우스 왼쪽 버튼 누름
+                        outputStream.writeObject("MOUSE LEFT PRESS" + "&" + code);//서버로 전송
+                    else if(motion.equals("MOUSE LEFT RELEASE"))//마우스 왼쪽 버튼 떼기
+                        outputStream.writeObject("MOUSE LEFT RELEASE" + "&" + code);//서버로 전송
+                    else if(motion.equals("MOUSE WHEEL PRESS"))//마우스 휠 버튼 누름
+                        outputStream.writeObject("MOUSE WHEEL PRESS" + "&" + code);//서버로 전송
+                    else if(motion.equals("MOUSE WHEEL RELEASE"))//마우스 휠 버튼 떼기
+                        outputStream.writeObject("MOUSE WHEEL RELEASE" + "&" + code);//서버로 전송
+                    else if(motion.equals("MOUSE RIGHT PRESS"))//마우스 오른쪽 버튼 누름
+                        outputStream.writeObject("MOUSE RIGHT PRESS" + "&" + code);//서버로 전송
+                    else if(motion.equals("MOUSE RIGHT RELEASE"))//마우스 오른쪽 버튼 떼기
+                       outputStream.writeObject("MOUSE RIGHT RELEASE" + "&" + code);//서버로 전송
+                    else if(motion.equals("MOUSE WHEEL UP"))//마우스 휠 업
+                        outputStream.writeObject("MOUSE WHEEL UP" + "&" + code + "&" + wheel_sensitivity);
+                    else if(motion.equals("MOUSE WHEEL DOWN"))//마우스 휠 다운
+                        outputStream.writeObject("MOUSE WHEEL DOWN" + "&" + code + "&" + wheel_sensitivity);
+                    else if(motion.equals("MOUSE WHEEL DRAG"))//마우스 휠 다운
+                        outputStream.writeObject("MOUSE WHEEL DRAG" + "&" + code + "&" + wheel_value_Y * wheel_sensitivity);
 
 
                     Log.d(TAG,"event 보냄");

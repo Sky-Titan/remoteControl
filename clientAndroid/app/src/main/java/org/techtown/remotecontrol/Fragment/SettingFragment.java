@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 
 import org.techtown.remotecontrol.Myapplication;
 import org.techtown.remotecontrol.R;
@@ -22,6 +23,8 @@ public class SettingFragment extends Fragment {
     View view;
 
     private String TAG = "SettingFragment";
+
+    NumberPicker mouseSensitivity, mouseWheelSensitivity;
 
     EditText ip_address;
     EditText port_number;
@@ -43,6 +46,18 @@ public class SettingFragment extends Fragment {
 
         myapplication = (Myapplication)getActivity().getApplication();
 
+        mouseSensitivity = (NumberPicker) view.findViewById(R.id.mouse_sensitivity_picker);
+        mouseSensitivity.setMinValue(1);
+        mouseSensitivity.setMaxValue(5);
+        mouseSensitivity.setValue(1);
+        mouseSensitivity.setWrapSelectorWheel(false);
+
+        mouseWheelSensitivity = (NumberPicker) view.findViewById(R.id.wheel_sensitivity_picker);
+        mouseWheelSensitivity.setMinValue(1);
+        mouseWheelSensitivity.setMaxValue(5);
+        mouseWheelSensitivity.setValue(1);
+        mouseWheelSensitivity.setWrapSelectorWheel(false);
+
         ip_address = (EditText) view.findViewById(R.id.IPaddress_edittext);
         port_number = (EditText) view.findViewById(R.id.portnumber_edittext);
         certify_number = (EditText) view.findViewById(R.id.certifynumber_edittext);
@@ -52,11 +67,38 @@ public class SettingFragment extends Fragment {
         ip_address.setText(sf.getString("ip",""));
         port_number.setText(sf.getString("port","5001"));
         certify_number.setText(sf.getString("certify",""));
+        mouseSensitivity.setValue(sf.getInt("mouseSensitivity",1));
+        mouseWheelSensitivity.setValue(sf.getInt("mouseWheelSensitivity",1));
 
         myapplication.setIp(ip_address.getText().toString());
         myapplication.setPort(Integer.parseInt(port_number.getText().toString()));
         myapplication.setCertifyNumber(certify_number.getText().toString());
+        myapplication.setMouseSensitivity(mouseSensitivity.getValue());
+        myapplication.setMouseWheelSensitivity(mouseWheelSensitivity.getValue());
 
+        //마우스감도
+        mouseSensitivity.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+                SharedPreferences.Editor editor = sf.edit();
+                editor.putInt("mouseSensitivity",i1);
+                editor.commit();
+
+                myapplication.setMouseSensitivity(i1);
+            }
+        });
+
+        //휠감도
+        mouseWheelSensitivity.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+                SharedPreferences.Editor editor = sf.edit();
+                editor.putInt("mouseWheelSensitivity",i1);
+                editor.commit();
+
+                myapplication.setMouseWheelSensitivity(i1);
+            }
+        });
         //ip 주소 텍스트 변화 있을때마다 전역변수로 입력
         ip_address.addTextChangedListener(new TextWatcher() {
             @Override

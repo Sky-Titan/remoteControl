@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -22,7 +24,7 @@ import java.net.Socket;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class KeyboardFragment extends Fragment implements View.OnClickListener {
+public class KeyboardFragment extends Fragment implements View.OnTouchListener {
 
 
 
@@ -54,32 +56,52 @@ public class KeyboardFragment extends Fragment implements View.OnClickListener {
 
 
         Button enter_btn = (Button) view.findViewById(R.id.enter_btn);
-        enter_btn.setOnClickListener(this);//ENTER버튼 클릭
+        enter_btn.setOnTouchListener(this);//ENTER버튼 클릭
 
         Button space_btn = (Button) view.findViewById(R.id.space_btn);
-        space_btn.setOnClickListener(this);//SPACE버튼 클릭
+        space_btn.setOnTouchListener(this);//SPACE버튼 클릭
 
         Button alt_tab_btn = (Button) view.findViewById(R.id.alt_tab_btn);
-        alt_tab_btn.setOnClickListener(this);//ALT TAB 클릭
+        alt_tab_btn.setOnTouchListener(this);//ALT TAB 클릭
 
         Button up_btn = (Button) view.findViewById(R.id.up_btn);
-        up_btn.setOnClickListener(this);
+        up_btn.setOnTouchListener(this);
 
         Button down_btn = (Button) view.findViewById(R.id.down_btn);
-        down_btn.setOnClickListener(this);
+        down_btn.setOnTouchListener(this);
 
         Button right_btn = (Button) view.findViewById(R.id.right_btn);
-        right_btn.setOnClickListener(this);
+        right_btn.setOnTouchListener(this);
 
         Button left_btn = (Button) view.findViewById(R.id.left_btn);
-        left_btn.setOnClickListener(this);
+        left_btn.setOnTouchListener(this);
 
         return view;
     }
 
     @Override
-    public void onClick(final View view) {
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        int eventaction = motionEvent.getAction();
 
+        //DOWN -> MOVE -> UP
+        switch (eventaction)
+        {
+            case MotionEvent.ACTION_UP://터치 뗄 때
+                sendEvent( ((Button)view).getText().toString() + " " + "RELEASE");
+                break;
+            case MotionEvent.ACTION_MOVE://터치 드래그할때
+                break;
+            case MotionEvent.ACTION_DOWN://터치 했을 때 좌표
+                sendEvent( ((Button)view).getText().toString() + " " + "PRESS");
+                break;
+        }
+
+
+        return true;//무조건 true!!
+    }
+
+    public void sendEvent(final String motion)
+    {
         //스레드 내에서 토스트 메시지를 호출
         final Handler handler = new Handler() {
             @Override
@@ -101,7 +123,7 @@ public class KeyboardFragment extends Fragment implements View.OnClickListener {
                     sock = new Socket(ip,port);//소켓 염
 
                     outputStream = new ObjectOutputStream(sock.getOutputStream());
-                    outputStream.writeObject( ((Button)view).getText().toString()+"&"+code );//서버로 전송
+                    outputStream.writeObject( motion+"&"+code );//서버로 전송
                     outputStream.flush();
 
                     inputStream = new ObjectInputStream(sock.getInputStream());//서버에서 return ㅂ다음
@@ -121,6 +143,6 @@ public class KeyboardFragment extends Fragment implements View.OnClickListener {
 
         });
         thread.start();
-
     }
+
 }

@@ -163,47 +163,65 @@ public class Setting extends JFrame
 					client_port2.setText(clientPort+"");
 				}
 				
-				if(key.equals("ENTER"))
+				if(key.equals("ENTER PRESS"))
 				{
 					robot.keyPress(KeyEvent.VK_ENTER);
 				}
-				else if(key.equals("SPACE"))
+				else if(key.equals("ENTER RELEASE"))
+				{
+					robot.keyRelease(KeyEvent.VK_ENTER);
+				}
+				else if(key.equals("SPACE PRESS"))
 				{ 
 					robot.keyPress(KeyEvent.VK_SPACE);
 				}
-				else if(key.equals("LEFT"))
-				{
-					robot.keyPress(KeyEvent.VK_LEFT);
+				else if(key.equals("SPACE RELEASE"))
+				{ 
+					robot.keyRelease(KeyEvent.VK_SPACE);
 				}
-				else if(key.equals("RIGHT"))
-				{
-					robot.keyPress(KeyEvent.VK_RIGHT);
-				}
-				else if(key.equals("ALT + TAB"))
+				else if(key.equals("ALT + TAB PRESS"))
 				{
 					robot.keyPress(KeyEvent.VK_ALT);
 					robot.keyPress(KeyEvent.VK_TAB);
-					
+				}
+				else if(key.equals("ALT + TAB RELEASE"))
+				{
 					robot.keyRelease(KeyEvent.VK_ALT);
 					robot.keyRelease(KeyEvent.VK_TAB);
 				}
-				else if(key.equals("→"))
+				else if(key.equals("→ PRESS"))
 				{
 					robot.keyPress(KeyEvent.VK_RIGHT);
 				}
-				else if(key.equals("←"))
+				else if(key.equals("→ RELEASE"))
+				{
+					robot.keyRelease(KeyEvent.VK_RIGHT);
+				}
+				else if(key.equals("← PRESS"))
 				{
 					robot.keyPress(KeyEvent.VK_LEFT);
 				}
-				else if(key.equals("↑"))
+				else if(key.equals("← RELEASE"))
+				{
+					robot.keyRelease(KeyEvent.VK_LEFT);
+				}
+				else if(key.equals("↑ PRESS"))
 				{
 					robot.keyPress(KeyEvent.VK_UP);
 				}
-				else if(key.equals("↓"))
+				else if(key.equals("↑ RELEASE"))
+				{
+					robot.keyRelease(KeyEvent.VK_UP);
+				}
+				else if(key.equals("↓ PRESS"))
 				{
 					robot.keyPress(KeyEvent.VK_DOWN);
 				}
-				else if(key.equals("MOUSE DRAG"))
+				else if(key.equals("↓ RELEASE"))
+				{
+					robot.keyRelease(KeyEvent.VK_DOWN);
+				}
+				else if(key.equals("MOUSE DRAG"))//마우스 커서 드래그
 				{
 					String position = strtok.nextToken();
 					strtok = new StringTokenizer(position,"|");
@@ -215,33 +233,52 @@ public class Setting extends JFrame
 					
 					robot.mouseMove(x + (int)pointerInfo.getLocation().getX(), y + (int)pointerInfo.getLocation().getY());
 				}
-				else if(key.equals("MOUSE LEFT"))
+				else if(key.equals("MOUSE LEFT PRESS"))//마우스 왼쪽 버튼 누름
 				{
 					robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+				}
+				else if(key.equals("MOUSE LEFT RELEASE"))//마우스 왼쪽 버튼 떼기
+				{
 					robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
 				}
-				else if(key.equals("MOUSE WHEEL BTN"))
+				else if(key.equals("MOUSE WHEEL PRESS"))//마우스 휠 버튼 누름
 				{
 					robot.mousePress(InputEvent.BUTTON2_DOWN_MASK);
+				}
+				else if(key.equals("MOUSE WHEEL RELEASE"))//마우스 휠 버튼 떼기
+				{
 					robot.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
 				}
-				else if(key.equals("MOUSE RIGHT"))
+				else if(key.equals("MOUSE RIGHT PRESS"))//마우스 오른쪽 버튼 누름
 				{
 					robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
+				}
+				else if(key.equals("MOUSE RIGHT RELEASE"))//마우스 오른쪽 버튼 떼기
+				{
 					robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
+				}
+				else if(key.equals("MOUSE WHEEL UP"))//마우스 휠 업
+				{
+					int sensitivity = Integer.parseInt(strtok.nextToken());
+					robot.mouseWheel(-1 * sensitivity); //1은 기본 이동값
+				}
+				else if(key.equals("MOUSE WHEEL DOWN"))//마우스 휠 다운
+				{
+					int sensitivity = Integer.parseInt(strtok.nextToken());
+					robot.mouseWheel(1 * sensitivity);//1은 기본이동값
+				}
+				else if(key.equals("MOUSE WHEEL DRAG"))//마우스 휠 드래그
+				{
+					int move = Integer.parseInt(strtok.nextToken());
+					robot.mouseWheel(move);
 				}
 				
 				ObjectOutputStream outputStream = new ObjectOutputStream(sock.getOutputStream());
 				outputStream.writeObject(key+" Complete from server");
 				outputStream.flush();
 				sock.close();
-				count++;
-				if(count == 10)
-				{
-					serverSocket.close();
-					serverSocket = new ServerSocket(port);
-					count=0;
-				}
+				
+				
 			}
 		
 		}

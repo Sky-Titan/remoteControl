@@ -20,6 +20,39 @@
             android:background="@color/white"></LinearLayout>
 
         <LinearLayout
+            android:layout_marginVertical="60dp"
+            android:layout_marginRight="10dp"
+            android:layout_gravity="right|center_vertical"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/mouse_wheel_up"
+                android:text="▲"
+                android:textColor="@color/black"
+                android:layout_weight="1"
+                android:layout_width="40dp"
+                android:layout_height="0dp" />
+
+            <Button
+                android:id="@+id/mouse_wheel_bar"
+                android:text="휠바"
+                android:textColor="@color/black"
+                android:layout_weight="5"
+                android:layout_width="40dp"
+                android:layout_height="0dp" />
+            <Button
+                android:id="@+id/mouse_wheel_down"
+                android:text="▼"
+                android:textColor="@color/black"
+                android:layout_weight="1"
+                android:layout_width="40dp"
+                android:layout_height="0dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:orientation="horizontal"
             android:layout_gravity="bottom"
             android:layout_width="match_parent"
@@ -51,6 +84,7 @@
 
         </LinearLayout>
     </FrameLayout>
+
     <TextView
         android:textColor="@color/black"
         android:layout_marginVertical="10dp"

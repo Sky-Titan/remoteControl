@@ -6,13 +6,29 @@ public class Myapplication extends Application {
 
     private String ip = "";
     private int port = 0;
-    private String certifyNumber;
-
+    private String certifyNumber;//인증코드
+    private int mouseSensitivity;//마우스 감도
+    private int mouseWheelSensitivity;//휠감도
     @Override
     public void onCreate() {
         super.onCreate();
 
+    }
 
+    public int getMouseWheelSensitivity() {
+        return mouseWheelSensitivity;
+    }
+
+    public void setMouseWheelSensitivity(int mouseWheelSensitivity) {
+        this.mouseWheelSensitivity = mouseWheelSensitivity;
+    }
+
+    public int getMouseSensitivity() {
+        return mouseSensitivity;
+    }
+
+    public void setMouseSensitivity(int mouseSensitivity) {
+        this.mouseSensitivity = mouseSensitivity;
     }
 
     public String getCertifyNumber() {
