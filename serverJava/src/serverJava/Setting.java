@@ -189,6 +189,32 @@ public class Setting extends JFrame
 					robot.keyRelease(KeyEvent.VK_ALT);
 					robot.keyRelease(KeyEvent.VK_TAB);
 				}
+				else if(key.equals("ALT + F4 PRESS"))
+				{
+					robot.keyPress(KeyEvent.VK_ALT);
+					robot.keyPress(KeyEvent.VK_F4);
+				}
+				else if(key.equals("ALT + F4 RELEASE"))
+				{
+					robot.keyRelease(KeyEvent.VK_ALT);
+					robot.keyRelease(KeyEvent.VK_F4);
+				}
+				else if(key.equals("BACKSPACE PRESS"))
+				{ 
+					robot.keyPress(KeyEvent.VK_BACK_SPACE);
+				}
+				else if(key.equals("BACKSPACE RELEASE"))
+				{ 
+					robot.keyRelease(KeyEvent.VK_BACK_SPACE);
+				}
+				else if(key.equals("ESC PRESS"))
+				{ 
+					robot.keyPress(KeyEvent.VK_ESCAPE);
+				}
+				else if(key.equals("ESC RELEASE"))
+				{ 
+					robot.keyRelease(KeyEvent.VK_ESCAPE);
+				}
 				else if(key.equals("¡æ PRESS"))
 				{
 					robot.keyPress(KeyEvent.VK_RIGHT);

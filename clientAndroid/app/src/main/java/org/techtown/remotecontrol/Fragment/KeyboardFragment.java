@@ -64,6 +64,15 @@ public class KeyboardFragment extends Fragment implements View.OnTouchListener {
         Button alt_tab_btn = (Button) view.findViewById(R.id.alt_tab_btn);
         alt_tab_btn.setOnTouchListener(this);//ALT TAB 클릭
 
+        Button alt_f4_btn = (Button) view.findViewById(R.id.alt_f4_btn);
+        alt_f4_btn.setOnTouchListener(this);
+
+        Button backspace_btn = (Button) view.findViewById(R.id.backspace_btn);
+        backspace_btn.setOnTouchListener(this);
+
+        Button esc_btn = (Button) view.findViewById(R.id.esc_btn);
+        esc_btn.setOnTouchListener(this);
+
         Button up_btn = (Button) view.findViewById(R.id.up_btn);
         up_btn.setOnTouchListener(this);
 
