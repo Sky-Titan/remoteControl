@@ -5,12 +5,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +22,7 @@ import java.net.Socket;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MainFragment extends Fragment implements View.OnClickListener {
+public class KeyboardFragment extends Fragment implements View.OnClickListener {
 
 
 
@@ -41,9 +39,9 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
     View view;
 
-    private String TAG = "MainFragment";
+    private String TAG = "KeyboardFragment";
 
-    public MainFragment() {
+    public KeyboardFragment() {
         // Required empty public constructor
     }
 
@@ -52,7 +50,7 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view =inflater.inflate(R.layout.fragment_main, container, false);
+        view =inflater.inflate(R.layout.fragment_keyboard, container, false);
 
 
         Button enter_btn = (Button) view.findViewById(R.id.enter_btn);
@@ -115,11 +113,11 @@ public class MainFragment extends Fragment implements View.OnClickListener {
                     Myapplication myapplication = (Myapplication)getActivity().getApplication();
                     ip = myapplication.getIp();
                     port = myapplication.getPort();
-
+                    String code = myapplication.getCertifyNumber();
                     sock = new Socket(ip,port);//소켓 염
 
                     outputStream = new ObjectOutputStream(sock.getOutputStream());
-                    outputStream.writeObject( ((Button)view).getText().toString() );//서버로 전송
+                    outputStream.writeObject( ((Button)view).getText().toString()+"&"+code );//서버로 전송
                     outputStream.flush();
 
                     inputStream = new ObjectInputStream(sock.getInputStream());//서버에서 return ㅂ다음

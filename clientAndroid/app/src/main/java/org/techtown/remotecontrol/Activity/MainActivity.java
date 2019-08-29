@@ -1,6 +1,5 @@
 package org.techtown.remotecontrol.Activity;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -14,21 +13,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import org.techtown.remotecontrol.Fragment.MainFragment;
+import org.techtown.remotecontrol.Fragment.KeyboardFragment;
+import org.techtown.remotecontrol.Fragment.MouseFragment;
 import org.techtown.remotecontrol.Fragment.SettingFragment;
 import org.techtown.remotecontrol.R;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
 
-    MainFragment mainFragment;
+    KeyboardFragment keyboardFragment;
     SettingFragment settingFragment;
+    MouseFragment mouseFragment;
 
     DrawerLayout drawer;
 
@@ -38,7 +34,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         settingFragment = new SettingFragment();
-        mainFragment= new MainFragment();
+        keyboardFragment = new KeyboardFragment();
+        mouseFragment = new MouseFragment();
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP)
         {
@@ -83,8 +80,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Fragment fragment = settingFragment;
             fragmentManager.beginTransaction().replace(R.id.content_home, fragment).commit();
         }
-        else if (id == R.id.main_nav) {
-            Fragment fragment = mainFragment;
+        else if (id == R.id.keyboard_nav) {
+            Fragment fragment = keyboardFragment;
+            fragmentManager.beginTransaction().replace(R.id.content_home, fragment).commit();
+        }
+        else if (id == R.id.mouse_nav) {
+            Fragment fragment = mouseFragment;
             fragmentManager.beginTransaction().replace(R.id.content_home, fragment).commit();
         }
 

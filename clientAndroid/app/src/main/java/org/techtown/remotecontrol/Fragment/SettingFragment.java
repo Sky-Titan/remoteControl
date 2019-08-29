@@ -21,8 +21,11 @@ public class SettingFragment extends Fragment {
 
     View view;
 
+    private String TAG = "SettingFragment";
+
     EditText ip_address;
     EditText port_number;
+    EditText certify_number;
 
     SharedPreferences sf;
 
@@ -42,14 +45,17 @@ public class SettingFragment extends Fragment {
 
         ip_address = (EditText) view.findViewById(R.id.IPaddress_edittext);
         port_number = (EditText) view.findViewById(R.id.portnumber_edittext);
+        certify_number = (EditText) view.findViewById(R.id.certifynumber_edittext);
 
         sf = getActivity().getSharedPreferences("sFile",getActivity().MODE_PRIVATE);
 
         ip_address.setText(sf.getString("ip",""));
         port_number.setText(sf.getString("port","5001"));
+        certify_number.setText(sf.getString("certify",""));
 
         myapplication.setIp(ip_address.getText().toString());
         myapplication.setPort(Integer.parseInt(port_number.getText().toString()));
+        myapplication.setCertifyNumber(certify_number.getText().toString());
 
         //ip 주소 텍스트 변화 있을때마다 전역변수로 입력
         ip_address.addTextChangedListener(new TextWatcher() {
@@ -88,6 +94,28 @@ public class SettingFragment extends Fragment {
                 editor.putString("port", port_number.getText().toString()); // key, value를 이용하여 저장하는 형태
                 editor.commit();
                 myapplication.setPort(Integer.parseInt(port_number.getText().toString()));
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        //인증번호 텍스트 변화 있을 때마다 전역변수로 입력
+        certify_number.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //저장을 하기위해 editor를 이용하여 값을 저장시켜준다.
+                SharedPreferences.Editor editor = sf.edit();
+                editor.putString("certify", certify_number.getText().toString()); // key, value를 이용하여 저장하는 형태
+                editor.commit();
+                myapplication.setCertifyNumber(certify_number.getText().toString());
             }
 
             @Override

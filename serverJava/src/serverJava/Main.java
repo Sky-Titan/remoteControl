@@ -18,7 +18,9 @@ public class Main{
 	
 	public static void main(String[] args) {
 		
-		try 
+		Setting setting = new Setting();
+		
+	/*	try 
 		{
 			
 			int port = 5001;
@@ -92,6 +94,6 @@ public class Main{
 		catch(Exception e)
 		{
 			
-		}	
+		}*/	
 	}
 }

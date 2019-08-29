@@ -10,9 +10,14 @@
             android:icon="@drawable/baseline_settings_black_36"
             android:title="설정" />
         <item
-            android:id="@+id/main_nav"
+            android:id="@+id/keyboard_nav"
             android:icon="@drawable/ic_keyboard_black_36dp"
             android:title="키보드" />
+
+        <item
+            android:id="@+id/mouse_nav"
+            android:icon="@drawable/ic_mouse_black_36dp"
+            android:title="마우스"/>
 
 
     </group>

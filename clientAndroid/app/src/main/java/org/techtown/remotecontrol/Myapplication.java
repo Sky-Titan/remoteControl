@@ -6,6 +6,7 @@ public class Myapplication extends Application {
 
     private String ip = "";
     private int port = 0;
+    private String certifyNumber;
 
     @Override
     public void onCreate() {
@@ -13,6 +14,15 @@ public class Myapplication extends Application {
 
 
     }
+
+    public String getCertifyNumber() {
+        return certifyNumber;
+    }
+
+    public void setCertifyNumber(String certifyNumber) {
+        this.certifyNumber = certifyNumber;
+    }
+
     public String getIp() {
         return ip;
     }

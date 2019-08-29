@@ -40,7 +40,31 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/information"
+            android:layout_marginTop="10dp"
+            android:text="인증코드"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/certifynumber_edittext"
+            android:theme="@style/EditTextStyle"
+            android:inputType="textPassword"
+            android:text="2081"
+            android:textColor="@color/black"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/information1"
+            android:layout_marginTop="30dp"
+            android:textAlignment="center"
+            android:textColor="@color/red"
+            android:text="PC의 외부 IP주소,\nPC에서 설정한 포트번호, 인증코드를 입력하십시오."
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+        <TextView
+            android:id="@+id/information2"
             android:layout_marginTop="30dp"
             android:textAlignment="center"
             android:textColor="@color/black"
