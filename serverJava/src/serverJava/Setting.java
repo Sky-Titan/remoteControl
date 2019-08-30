@@ -304,7 +304,13 @@ public class Setting extends JFrame
 				outputStream.flush();
 				sock.close();
 				
-				
+			/*	count++;
+				if(count==40)
+				{
+					serverSocket.close();
+					serverSocket = new ServerSocket(port);
+					count=0;
+				}*/
 			}
 		
 		}
