@@ -163,154 +163,222 @@ public class Setting extends JFrame
 					client_port2.setText(clientPort+"");
 				}
 				
-				if(key.equals("ENTER PRESS"))
+				if(key.equals("KEYBOARD START"))
 				{
-					robot.keyPress(KeyEvent.VK_ENTER);
-				}
-				else if(key.equals("ENTER RELEASE"))
-				{
-					robot.keyRelease(KeyEvent.VK_ENTER);
-				}
-				else if(key.equals("SPACE PRESS"))
-				{ 
-					robot.keyPress(KeyEvent.VK_SPACE);
-				}
-				else if(key.equals("SPACE RELEASE"))
-				{ 
-					robot.keyRelease(KeyEvent.VK_SPACE);
-				}
-				else if(key.equals("ALT + TAB PRESS"))
-				{
-					robot.keyPress(KeyEvent.VK_ALT);
-					robot.keyPress(KeyEvent.VK_TAB);
-				}
-				else if(key.equals("ALT + TAB RELEASE"))
-				{
-					robot.keyRelease(KeyEvent.VK_ALT);
-					robot.keyRelease(KeyEvent.VK_TAB);
-				}
-				else if(key.equals("ALT + F4 PRESS"))
-				{
-					robot.keyPress(KeyEvent.VK_ALT);
-					robot.keyPress(KeyEvent.VK_F4);
-				}
-				else if(key.equals("ALT + F4 RELEASE"))
-				{
-					robot.keyRelease(KeyEvent.VK_ALT);
-					robot.keyRelease(KeyEvent.VK_F4);
-				}
-				else if(key.equals("BACKSPACE PRESS"))
-				{ 
-					robot.keyPress(KeyEvent.VK_BACK_SPACE);
-				}
-				else if(key.equals("BACKSPACE RELEASE"))
-				{ 
-					robot.keyRelease(KeyEvent.VK_BACK_SPACE);
-				}
-				else if(key.equals("ESC PRESS"))
-				{ 
-					robot.keyPress(KeyEvent.VK_ESCAPE);
-				}
-				else if(key.equals("ESC RELEASE"))
-				{ 
-					robot.keyRelease(KeyEvent.VK_ESCAPE);
-				}
-				else if(key.equals("→ PRESS"))
-				{
-					robot.keyPress(KeyEvent.VK_RIGHT);
-				}
-				else if(key.equals("→ RELEASE"))
-				{
-					robot.keyRelease(KeyEvent.VK_RIGHT);
-				}
-				else if(key.equals("← PRESS"))
-				{
-					robot.keyPress(KeyEvent.VK_LEFT);
-				}
-				else if(key.equals("← RELEASE"))
-				{
-					robot.keyRelease(KeyEvent.VK_LEFT);
-				}
-				else if(key.equals("↑ PRESS"))
-				{
-					robot.keyPress(KeyEvent.VK_UP);
-				}
-				else if(key.equals("↑ RELEASE"))
-				{
-					robot.keyRelease(KeyEvent.VK_UP);
-				}
-				else if(key.equals("↓ PRESS"))
-				{
-					robot.keyPress(KeyEvent.VK_DOWN);
-				}
-				else if(key.equals("↓ RELEASE"))
-				{
-					robot.keyRelease(KeyEvent.VK_DOWN);
-				}
-				else if(key.equals("MOUSE DRAG"))//마우스 커서 드래그
-				{
-					String position = strtok.nextToken();
-					strtok = new StringTokenizer(position,"|");
+					while(true)
+					{
+						inputStream = new ObjectInputStream(sock.getInputStream());
+						obj = inputStream.readObject();
 					
-					int x = Integer.parseInt(strtok.nextToken());
-					int y = Integer.parseInt(strtok.nextToken());
+						receive = String.valueOf(obj);
+						strtok = new StringTokenizer(receive, "&");
 					
-					PointerInfo pointerInfo = MouseInfo.getPointerInfo();
+						key = strtok.nextToken();
+						code = strtok.nextToken();
+						
+						if(!code.equals(certify_number.getText())) //수신한 인증코드와 입력한 인증코드가 같지 않으면 처리 x
+						{
+							receive_info2.setText("인증코드 에러");
+							sock.close();
+							continue;
+						}
+						else
+						{
+							receive_info2.setText(key);
+							client_ip2.setText(clientHost+"");
+							client_port2.setText(clientPort+"");
+						}
+						
+						if(key.equals("ENTER PRESS"))
+						{
+							robot.keyPress(KeyEvent.VK_ENTER);
+						}
+						else if(key.equals("ENTER RELEASE"))
+						{
+							robot.keyRelease(KeyEvent.VK_ENTER);
+						}
+						else if(key.equals("SPACE PRESS"))
+						{ 
+							robot.keyPress(KeyEvent.VK_SPACE);
+						}
+						else if(key.equals("SPACE RELEASE"))
+						{ 
+							robot.keyRelease(KeyEvent.VK_SPACE);
+						}
+						else if(key.equals("ALT + TAB PRESS"))
+						{
+							robot.keyPress(KeyEvent.VK_ALT);
+							robot.keyPress(KeyEvent.VK_TAB);
+						}
+						else if(key.equals("ALT + TAB RELEASE"))
+						{
+							robot.keyRelease(KeyEvent.VK_ALT);
+							robot.keyRelease(KeyEvent.VK_TAB);
+						}
+						else if(key.equals("ALT + F4 PRESS"))
+						{
+							robot.keyPress(KeyEvent.VK_ALT);
+							robot.keyPress(KeyEvent.VK_F4);
+						}
+						else if(key.equals("ALT + F4 RELEASE"))
+						{
+							robot.keyRelease(KeyEvent.VK_ALT);
+							robot.keyRelease(KeyEvent.VK_F4);
+						}
+						else if(key.equals("BACKSPACE PRESS"))
+						{ 
+							robot.keyPress(KeyEvent.VK_BACK_SPACE);
+						}
+						else if(key.equals("BACKSPACE RELEASE"))
+						{ 
+							robot.keyRelease(KeyEvent.VK_BACK_SPACE);
+						}
+						else if(key.equals("ESC PRESS"))
+						{ 
+							robot.keyPress(KeyEvent.VK_ESCAPE);
+						}
+						else if(key.equals("ESC RELEASE"))
+						{ 
+							robot.keyRelease(KeyEvent.VK_ESCAPE);
+						}
+						else if(key.equals("→ PRESS"))
+						{
+							robot.keyPress(KeyEvent.VK_RIGHT);
+						}
+						else if(key.equals("→ RELEASE"))
+						{
+							robot.keyRelease(KeyEvent.VK_RIGHT);
+						}
+						else if(key.equals("← PRESS"))
+						{
+							robot.keyPress(KeyEvent.VK_LEFT);
+						}
+						else if(key.equals("← RELEASE"))
+						{
+							robot.keyRelease(KeyEvent.VK_LEFT);
+						}
+						else if(key.equals("↑ PRESS"))
+						{
+							robot.keyPress(KeyEvent.VK_UP);
+						}
+						else if(key.equals("↑ RELEASE"))
+						{
+							robot.keyRelease(KeyEvent.VK_UP);
+						}
+						else if(key.equals("↓ PRESS"))
+						{
+							robot.keyPress(KeyEvent.VK_DOWN);
+						}
+						else if(key.equals("↓ RELEASE"))
+						{
+							robot.keyRelease(KeyEvent.VK_DOWN);
+						}
+						else if(key.equals("KEYBOARD FINISH"))
+						{
+							ObjectOutputStream outputStream = new ObjectOutputStream(sock.getOutputStream());
+							outputStream.writeObject("OK");
+							outputStream.flush();
+							sock.close();
+							break;
+						}
+						ObjectOutputStream outputStream = new ObjectOutputStream(sock.getOutputStream());
+						outputStream.writeObject(key+" Complete from server");
+						outputStream.flush();
+					}
+				}
+			
+				else if(key.equals("MOUSE START")) //마우스 시작~~~
+				{
+				
+					while(true)
+					{
+						inputStream = new ObjectInputStream(sock.getInputStream());
+						obj = inputStream.readObject();
 					
-					robot.mouseMove(x + (int)pointerInfo.getLocation().getX(), y + (int)pointerInfo.getLocation().getY());
-				}
-				else if(key.equals("MOUSE LEFT PRESS"))//마우스 왼쪽 버튼 누름
-				{
-					robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-				}
-				else if(key.equals("MOUSE LEFT RELEASE"))//마우스 왼쪽 버튼 떼기
-				{
-					robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-				}
-				else if(key.equals("MOUSE WHEEL PRESS"))//마우스 휠 버튼 누름
-				{
-					robot.mousePress(InputEvent.BUTTON2_DOWN_MASK);
-				}
-				else if(key.equals("MOUSE WHEEL RELEASE"))//마우스 휠 버튼 떼기
-				{
-					robot.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
-				}
-				else if(key.equals("MOUSE RIGHT PRESS"))//마우스 오른쪽 버튼 누름
-				{
-					robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
-				}
-				else if(key.equals("MOUSE RIGHT RELEASE"))//마우스 오른쪽 버튼 떼기
-				{
-					robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
-				}
-				else if(key.equals("MOUSE WHEEL UP"))//마우스 휠 업
-				{
-					int sensitivity = Integer.parseInt(strtok.nextToken());
-					robot.mouseWheel(-1 * sensitivity); //1은 기본 이동값
-				}
-				else if(key.equals("MOUSE WHEEL DOWN"))//마우스 휠 다운
-				{
-					int sensitivity = Integer.parseInt(strtok.nextToken());
-					robot.mouseWheel(1 * sensitivity);//1은 기본이동값
-				}
-				else if(key.equals("MOUSE WHEEL DRAG"))//마우스 휠 드래그
-				{
-					int move = Integer.parseInt(strtok.nextToken());
-					robot.mouseWheel(move);
+						receive = String.valueOf(obj);
+						strtok = new StringTokenizer(receive, "&");
+					
+						key = strtok.nextToken();
+						code = strtok.nextToken();
+						
+						if(!code.equals(certify_number.getText())) //수신한 인증코드와 입력한 인증코드가 같지 않으면 처리 x
+						{
+							receive_info2.setText("인증코드 에러");
+							sock.close();
+							continue;
+						}
+						else
+						{
+							receive_info2.setText(key);
+							client_ip2.setText(clientHost+"");
+							client_port2.setText(clientPort+"");
+						}
+						
+						if(key.equals("MOUSE DRAG"))//마우스 커서 드래그
+						{
+							String position = strtok.nextToken();
+							strtok = new StringTokenizer(position,"|");
+							
+							int x = Integer.parseInt(strtok.nextToken());
+							int y = Integer.parseInt(strtok.nextToken());
+							
+							PointerInfo pointerInfo = MouseInfo.getPointerInfo();
+							
+							robot.mouseMove(x + (int)pointerInfo.getLocation().getX(), y + (int)pointerInfo.getLocation().getY());
+						}
+						else if(key.equals("MOUSE LEFT PRESS"))//마우스 왼쪽 버튼 누름
+						{
+							robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+						}
+						else if(key.equals("MOUSE LEFT RELEASE"))//마우스 왼쪽 버튼 떼기
+						{
+							robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+						}
+						else if(key.equals("MOUSE WHEEL PRESS"))//마우스 휠 버튼 누름
+						{
+							robot.mousePress(InputEvent.BUTTON2_DOWN_MASK);
+						}
+						else if(key.equals("MOUSE WHEEL RELEASE"))//마우스 휠 버튼 떼기
+						{
+							robot.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
+						}
+						else if(key.equals("MOUSE RIGHT PRESS"))//마우스 오른쪽 버튼 누름
+						{
+							robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
+						}
+						else if(key.equals("MOUSE RIGHT RELEASE"))//마우스 오른쪽 버튼 떼기
+						{
+							robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
+						}
+						else if(key.equals("MOUSE WHEEL UP"))//마우스 휠 업
+						{
+							int sensitivity = Integer.parseInt(strtok.nextToken());
+							robot.mouseWheel(-1 * sensitivity); //1은 기본 이동값
+						}
+						else if(key.equals("MOUSE WHEEL DOWN"))//마우스 휠 다운
+						{
+							int sensitivity = Integer.parseInt(strtok.nextToken());
+							robot.mouseWheel(1 * sensitivity);//1은 기본이동값
+						}
+						else if(key.equals("MOUSE WHEEL DRAG"))//마우스 휠 드래그
+						{
+							int move = Integer.parseInt(strtok.nextToken());
+							robot.mouseWheel(move);
+						}
+						else if(key.equals("MOUSE FINISH"))
+						{
+							ObjectOutputStream outputStream = new ObjectOutputStream(sock.getOutputStream());
+							outputStream.writeObject("OK");
+							outputStream.flush();
+							sock.close();
+							break;
+						}
+						ObjectOutputStream outputStream = new ObjectOutputStream(sock.getOutputStream());
+						outputStream.writeObject(key+" Complete from server");
+						outputStream.flush();
+					}
 				}
 				
-				ObjectOutputStream outputStream = new ObjectOutputStream(sock.getOutputStream());
-				outputStream.writeObject(key+" Complete from server");
-				outputStream.flush();
-				sock.close();
-				
-			/*	count++;
-				if(count==40)
-				{
-					serverSocket.close();
-					serverSocket = new ServerSocket(port);
-					count=0;
-				}*/
 			}
 		
 		}

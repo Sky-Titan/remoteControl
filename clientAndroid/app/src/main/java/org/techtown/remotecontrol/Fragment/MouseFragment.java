@@ -43,12 +43,16 @@ public class MouseFragment extends Fragment {
     String ip = "";
     Socket sock=null;
 
+    boolean isConnect = false;
+
     String msg_1="";//서버에서 받은 리턴 메시지
 
     boolean isFinished = true ; //스레드 여러 개 생성 못하게 하기 위한 장치
 
     Button left,wheel,right;
     Button wheel_up,wheel_down,wheel_bar;
+
+    Myapplication myapplication;
 
     public MouseFragment() {
         // Required empty public constructor
@@ -60,6 +64,8 @@ public class MouseFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_mouse, container, false);
+
+        Log.d(TAG,"onCreateView");
 
         wheel_up = (Button) view.findViewById(R.id.mouse_wheel_up);//마우스 휠 업
         wheel_up.setOnClickListener(new View.OnClickListener() {
@@ -227,36 +233,102 @@ public class MouseFragment extends Fragment {
                 return true;//무조건 true!!
             }
         });
+        myapplication = (Myapplication)getActivity().getApplication();
+        connect();
 
         return view;
     }
 
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG,"onDestroy");
+        disconnect();
+    }
+
+    public void disconnect()
+    {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                Log.d(TAG,"disconnect");
+                String code = myapplication.getCertifyNumber();
+                try {
+                    outputStream = new ObjectOutputStream(sock.getOutputStream());
+                    outputStream.writeObject("MOUSE FINISH"+"&"+code);
+                    outputStream.flush();
+
+                    inputStream = new ObjectInputStream(sock.getInputStream());
+                    Object object = inputStream.readObject();
+                    if (!sock.isClosed() && sock != null && object.toString().equals("OK"))
+                        sock.close();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        thread.start();
+    }
+    public void connect()
+    {
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                Log.d(TAG,"connect");
+
+                try
+                {
+                    ip = myapplication.getIp();
+                    port = myapplication.getPort();
+
+                    sock = new Socket(ip,port);//소켓 염
+
+                    String code = myapplication.getCertifyNumber();
+
+                    outputStream = new ObjectOutputStream(sock.getOutputStream());
+                    outputStream.writeObject("MOUSE START"+"&" + code);
+                    outputStream.flush();
+
+                    inputStream = new ObjectInputStream(sock.getInputStream());
+                    Object object = inputStream.readObject();
+                    Toast.makeText(getContext(),object.toString(),Toast.LENGTH_SHORT).show();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+
+            }
+        });
+        thread.start();
+    }
+
+
     public void sendEvent(final String motion)
     {
-        //스레드 내에서 토스트 메시지를 호출
-     /*   final Handler handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                Toast.makeText(getContext(), msg_1, Toast.LENGTH_SHORT).show();
-                super.handleMessage(msg);
-            }
-        };*/
+
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
 
                try
                 {
-                    Myapplication myapplication = (Myapplication)getActivity().getApplication();
 
                     int sensitivity = myapplication.getMouseSensitivity();//마우스감도
                     int wheel_sensitivity = myapplication.getMouseWheelSensitivity();//휠감도
-                    ip = myapplication.getIp();
-                    port = myapplication.getPort();
+
                     String code = myapplication.getCertifyNumber();
 
 
-                    sock = new Socket(ip,port);//소켓 염
 
                     outputStream = new ObjectOutputStream(sock.getOutputStream());
 
@@ -287,11 +359,7 @@ public class MouseFragment extends Fragment {
 
                     msg_1 = String.valueOf(inputStream.readObject());//서버에서 돌려받은 메시지
                     outputStream.flush();
-                 //   handler.sendEmptyMessage(0);//hadler 호출
 
-                    if(sock!=null&&!sock.isClosed())
-                        sock.close();
-                    sock=null;
                     isFinished=true;
                 }
                 catch (Exception e)
@@ -301,7 +369,7 @@ public class MouseFragment extends Fragment {
                     {
                         try
                         {
-                            sock.close();
+                            //sock.close();
                         }
                         catch (Exception ex)
                         {

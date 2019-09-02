@@ -34,12 +34,14 @@ public class KeyboardFragment extends Fragment implements View.OnTouchListener {
     ObjectOutputStream outputStream;
     ObjectInputStream inputStream;
     int port ;
-    String ip = "220.122.13.177";
+    String ip = "";
     Socket sock;
 
     String msg_1="";//서버에서 받은 리턴 메시지
 
     View view;
+
+    Myapplication myapplication;
 
     private String TAG = "KeyboardFragment";
 
@@ -85,9 +87,79 @@ public class KeyboardFragment extends Fragment implements View.OnTouchListener {
         Button left_btn = (Button) view.findViewById(R.id.left_btn);
         left_btn.setOnTouchListener(this);
 
+        myapplication = (Myapplication)getActivity().getApplication();
+        connect();
+
         return view;
     }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG,"onDestroy");
+        disconnect();
+    }
 
+    public void disconnect()
+    {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                Log.d(TAG,"disconnect");
+                String code = myapplication.getCertifyNumber();
+                try {
+                    outputStream = new ObjectOutputStream(sock.getOutputStream());
+                    outputStream.writeObject("KEYBOARD FINISH"+"&"+code);
+                    outputStream.flush();
+
+                    inputStream = new ObjectInputStream(sock.getInputStream());
+                    Object object = inputStream.readObject();
+                    if (!sock.isClosed() && sock != null && object.toString().equals("OK"))
+                        sock.close();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        thread.start();
+    }
+    public void connect()
+    {
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                Log.d(TAG,"connect");
+                // Myapplication myapplication = (Myapplication)getActivity().getApplication();
+                try
+                {
+                    ip = myapplication.getIp();
+                    port = myapplication.getPort();
+
+                    sock = new Socket(ip,port);//소켓 염
+
+                    String code = myapplication.getCertifyNumber();
+
+                    outputStream = new ObjectOutputStream(sock.getOutputStream());
+                    outputStream.writeObject("KEYBOARD START"+"&" + code);
+                    outputStream.flush();
+
+                    inputStream = new ObjectInputStream(sock.getInputStream());
+                    Object object = inputStream.readObject();
+                    Toast.makeText(getContext(),object.toString(),Toast.LENGTH_SHORT).show();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+    }
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         int eventaction = motionEvent.getAction();
@@ -125,11 +197,9 @@ public class KeyboardFragment extends Fragment implements View.OnTouchListener {
 
                 try
                 {
-                    Myapplication myapplication = (Myapplication)getActivity().getApplication();
                     ip = myapplication.getIp();
                     port = myapplication.getPort();
                     String code = myapplication.getCertifyNumber();
-                    sock = new Socket(ip,port);//소켓 염
 
                     outputStream = new ObjectOutputStream(sock.getOutputStream());
                     outputStream.writeObject( motion+"&"+code );//서버로 전송
@@ -141,7 +211,6 @@ public class KeyboardFragment extends Fragment implements View.OnTouchListener {
 
                     handler.sendEmptyMessage(0);//hadler 호출
 
-                    sock.close();
                 }
                 catch (Exception e)
                 {
