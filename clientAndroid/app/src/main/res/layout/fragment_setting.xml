@@ -13,57 +13,75 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <TextView
-            android:text="IP주소"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/IPaddress_edittext"
-            android:theme="@style/EditTextStyle"
-            android:text="220.122.13.177"
-            android:textColor="@color/black"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
 
-        <TextView
-            android:layout_marginTop="10dp"
-            android:text="포트번호"
+        <LinearLayout
+            android:id="@+id/socket_connect_layout"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/portnumber_edittext"
-            android:theme="@style/EditTextStyle"
-            android:inputType="number"
-            android:text="5001"
-            android:textColor="@color/black"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_marginTop="10dp"
-            android:text="인증코드"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:id="@+id/certifynumber_edittext"
-            android:theme="@style/EditTextStyle"
-            android:inputType="textPassword"
-            android:text="2081"
-            android:textColor="@color/black"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            <TextView
+                android:text="IP주소"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/IPaddress_edittext"
+                android:theme="@style/EditTextStyle"
+                android:text="220.122.13.177"
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/information1"
-            android:layout_marginTop="20dp"
-            android:textAlignment="center"
-            android:textColor="@color/red"
-            android:text="PC의 외부 IP주소,\nPC에서 설정한 포트번호, 인증코드를 입력하십시오."
+            <TextView
+                android:layout_marginTop="10dp"
+                android:text="포트번호"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/portnumber_edittext"
+                android:theme="@style/EditTextStyle"
+                android:inputType="number"
+                android:text="5001"
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_marginTop="10dp"
+                android:text="인증코드"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/certifynumber_edittext"
+                android:theme="@style/EditTextStyle"
+                android:inputType="textPassword"
+                android:text="2081"
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/bluetooth_connect_layout"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/bluetooth_button"
+                android:src="@drawable/ic_bluetooth_connected_black_48dp"
+                android:background="@color/transparent"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
 
         <LinearLayout
             android:orientation="horizontal"
+            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
