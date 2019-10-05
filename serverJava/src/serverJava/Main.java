@@ -16,9 +16,9 @@ import com.sun.corba.se.impl.oa.poa.ActiveObjectMap.Key;
 public class Main{
 
 	
-/*	public static void main(String[] args) {
+	public static void main(String[] args) {
 		
 		Setting setting = new Setting();
 
-	}*/
+	}
 }

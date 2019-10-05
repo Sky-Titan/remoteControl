@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,22 +15,19 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.techtown.remotecontrol.KeyboardItem;
 import org.techtown.remotecontrol.Myapplication;
 import org.techtown.remotecontrol.R;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class KeyboardFragment extends Fragment implements View.OnTouchListener {
-
-
-
-    TextView information;
-    TextView title;
 
     ObjectOutputStream outputStream;
     ObjectInputStream inputStream;
@@ -44,6 +42,7 @@ public class KeyboardFragment extends Fragment implements View.OnTouchListener {
     Myapplication myapplication;
 
     private String TAG = "KeyboardFragment";
+
 
     public KeyboardFragment() {
         // Required empty public constructor

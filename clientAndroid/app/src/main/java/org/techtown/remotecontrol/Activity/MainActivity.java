@@ -17,7 +17,11 @@ import android.view.MenuItem;
 import org.techtown.remotecontrol.Fragment.KeyboardFragment;
 import org.techtown.remotecontrol.Fragment.MouseFragment;
 import org.techtown.remotecontrol.Fragment.SettingFragment;
+import org.techtown.remotecontrol.KeyboardItem;
+import org.techtown.remotecontrol.Myapplication;
 import org.techtown.remotecontrol.R;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -26,12 +30,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     SettingFragment settingFragment;
     MouseFragment mouseFragment;
 
+    ArrayList<KeyboardItem> keyboardItemList = new ArrayList<>();
+
     DrawerLayout drawer;
 
+    Myapplication app;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        app = (Myapplication) getApplication();
+        BasicKeyListSetting();//키리스트 세팅
 
         settingFragment = new SettingFragment();
         keyboardFragment = new KeyboardFragment();
@@ -92,5 +102,150 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void BasicKeyListSetting()//기본 키리스트 세팅
+    {
+        ArrayList<Integer> keycodes = new ArrayList<>();
+        ArrayList<String> keyNames = new ArrayList<>();
+        keycodes.add(27);//esc
+        keyNames.add("Esc");
+        keycodes.add(9);//tab
+        keyNames.add("Tab");
+        keycodes.add(20);//caps lock
+        keyNames.add("Caps Lock");
+        keycodes.add(16);//shift
+        keyNames.add("Shift");
+        keycodes.add(17);//cltr
+        keyNames.add("Control");
+        keycodes.add(524);//window
+        keyNames.add("Window");
+        keycodes.add(18);//alt
+        keyNames.add("Alt");
+        keycodes.add(32);//space
+        keyNames.add("Space");
+        keycodes.add(155);//insert
+        keyNames.add("Insert");
+        keycodes.add(36);//home
+        keyNames.add("Home");
+        keycodes.add(33);//page up
+        keyNames.add("Page Up");
+        keycodes.add(34);//page down
+        keyNames.add("Page Down");
+        keycodes.add(154);//print screen
+        keyNames.add("Print Screen");
+        keycodes.add(145);//scroll lock
+        keyNames.add("Scroll Lock");
+        keycodes.add(19);//pause
+        keyNames.add("Pause");
+        keycodes.add(10);//enter
+        keyNames.add("Enter");
+        keycodes.add(144);//num lock
+        keyNames.add("Num Lock");
+        keycodes.add(44);// comma ','
+        keyNames.add(",");
+        keycodes.add(46);// period '.'
+        keyNames.add(".");
+        keycodes.add(47);//slash '/'
+        keyNames.add("/");
+        keycodes.add(61);// equals '='
+        keyNames.add("=");
+        keycodes.add(45);//minus '-'
+        keyNames.add("-");
+        keycodes.add(521);//plus '+'
+        keyNames.add("+");
+        keycodes.add(92);//backslash '\'
+        keyNames.add("Back Slash '\'");
+        keycodes.add(59);// semi colon ';'
+        keyNames.add(";");
+        keycodes.add(91);//open bricket '['
+        keyNames.add("[");
+        keycodes.add(93);//close bricket ']'
+        keyNames.add("]");
+        keycodes.add(8);//back space
+        keyNames.add("Back Space");
+
+        for(int i=0;i<keycodes.size();i++)//특수키
+        {
+            int keycode = keycodes.get(i);//alt
+            KeyboardItem keyboardItem = new KeyboardItem(String.format("%s",keycode));
+            ArrayList<String> btn_list = new ArrayList<>();
+            btn_list.add(keyNames.get(i));
+            ArrayList<Integer> keycode_list = new ArrayList<>();
+            keycode_list.add(keycode);
+            keyboardItem.setButton_list(btn_list);
+            keyboardItem.setKeycode_list(keycode_list);
+            keyboardItem.setTAG("Special Key");//특수키
+            keyboardItemList.add(keyboardItem);
+        }
+
+        for(int i=37;i<=40;i++)//키보드 : 방향키
+        {
+            KeyboardItem keyboardItem = new KeyboardItem(String.format("%s",i));
+            ArrayList<String> btn_list = new ArrayList<>();
+            if(i==37)//left
+                btn_list.add("←");
+            else if(i==38)//up
+                btn_list.add("↑");
+            else if(i==39)//right
+                btn_list.add("→");
+            else if(i==40)//down
+                btn_list.add("↓");
+            ArrayList<Integer> keycode_list = new ArrayList<>();
+            keycode_list.add(i);
+            keyboardItem.setButton_list(btn_list);
+            keyboardItem.setKeycode_list(keycode_list);
+            keyboardItem.setTAG("Direction key");//방향키
+            keyboardItemList.add(keyboardItem);
+        }
+        for(int i=48;i<=57;i++)//키보드 : 0~9
+        {
+            KeyboardItem keyboardItem = new KeyboardItem(String.format("%s",i));
+            ArrayList<String> btn_list = new ArrayList<>();
+            btn_list.add(String.valueOf(i-48));
+            ArrayList<Integer> keycode_list = new ArrayList<>();
+            keycode_list.add(i);
+            keyboardItem.setButton_list(btn_list);
+            keyboardItem.setKeycode_list(keycode_list);
+            keyboardItem.setTAG("Number");//숫자
+            keyboardItemList.add(keyboardItem);
+        }
+        for(int i=96;i<=105;i++)//키보드 : 숫자패드0~9
+        {
+            KeyboardItem keyboardItem = new KeyboardItem(String.format("%s",i));
+            ArrayList<String> btn_list = new ArrayList<>();
+            btn_list.add("숫자패드"+String.valueOf(i-96));
+            ArrayList<Integer> keycode_list = new ArrayList<>();
+            keycode_list.add(i);
+            keyboardItem.setButton_list(btn_list);
+            keyboardItem.setKeycode_list(keycode_list);
+            keyboardItem.setTAG("Number Pad");//숫자패드
+            keyboardItemList.add(keyboardItem);
+        }
+        for(int i=65;i<=90;i++)//키보드 A~Z
+        {
+            KeyboardItem keyboardItem = new KeyboardItem(String.format("%s",i));
+            ArrayList<String> btn_list = new ArrayList<>();
+            btn_list.add(String.format("%s",i));
+            ArrayList<Integer> keycode_list = new ArrayList<>();
+            keycode_list.add(i);
+            keyboardItem.setButton_list(btn_list);
+            keyboardItem.setKeycode_list(keycode_list);
+            keyboardItem.setTAG("Alphabet");
+            keyboardItemList.add(keyboardItem);
+        }
+        for(int i=112;i<=123;i++)//키보드 F1~F12
+        {
+            KeyboardItem keyboardItem = new KeyboardItem(String.format("%s",i));
+            ArrayList<String> btn_list = new ArrayList<>();
+            btn_list.add("F"+String.valueOf(i-111));
+            ArrayList<Integer> keycode_list = new ArrayList<>();
+            keycode_list.add(i);
+            keyboardItem.setButton_list(btn_list);
+            keyboardItem.setKeycode_list(keycode_list);
+            keyboardItem.setTAG("Function Key");
+            keyboardItemList.add(keyboardItem);
+        }
+        app.setKeyboardItemlist(keyboardItemList);//전역변수로 설정정
     }
 }

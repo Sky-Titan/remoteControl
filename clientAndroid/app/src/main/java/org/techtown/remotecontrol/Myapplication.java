@@ -2,6 +2,8 @@ package org.techtown.remotecontrol;
 
 import android.app.Application;
 
+import java.util.ArrayList;
+
 public class Myapplication extends Application {
 
     private String ip = "";
@@ -9,10 +11,20 @@ public class Myapplication extends Application {
     private String certifyNumber;//인증코드
     private int mouseSensitivity;//마우스 감도
     private int mouseWheelSensitivity;//휠감도
+    private ArrayList<KeyboardItem> keyboardItemlist;//전체 키보드 버튼 리스트
+
     @Override
     public void onCreate() {
         super.onCreate();
 
+    }
+
+    public ArrayList<KeyboardItem> getKeyboardItemlist() {
+        return keyboardItemlist;
+    }
+
+    public void setKeyboardItemlist(ArrayList<KeyboardItem> keyboardItemlist) {
+        this.keyboardItemlist = keyboardItemlist;
     }
 
     public int getMouseWheelSensitivity() {
