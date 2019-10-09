@@ -68,9 +68,9 @@ public class KeyboardListAdapter extends BaseAdapter {
     }
 
     // 아이템 데이터 추가를 위한 함수. 개발자가 원하는대로 작성 가능.
-    public void addItem(String btn_name,ArrayList<String> btn_list, ArrayList<Integer> keycode_list)
+    public void addItem(String btn_name,ArrayList<String> btn_list, ArrayList<Integer> keycode_list, String tag)
     {
-        KeyboardItem keyboardItem = new KeyboardItem(btn_name,btn_list,keycode_list);
+        KeyboardItem keyboardItem = new KeyboardItem(btn_name,btn_list,keycode_list,tag);
         keyboardItemList.add(keyboardItem);
     }
 }

@@ -13,6 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import org.techtown.remotecontrol.Fragment.KeyboardFragment;
 import org.techtown.remotecontrol.Fragment.MouseFragment;
@@ -31,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     MouseFragment mouseFragment;
 
     ArrayList<KeyboardItem> keyboardItemList = new ArrayList<>();
-
+    int currentMenuId=R.id.setting_nav;//처음 선택되어있는 메뉴 아이디는 setting메뉴
     DrawerLayout drawer;
 
     Myapplication app;
@@ -46,6 +50,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         settingFragment = new SettingFragment();
         keyboardFragment = new KeyboardFragment();
         mouseFragment = new MouseFragment();
+
+        ImageButton autonew_btn = (ImageButton) findViewById(R.id.autonew_btn);//새로고침 버튼
+        autonew_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(currentMenuId == R.id.mouse_nav)//마우스 연결 새로고침
+                {
+                    mouseFragment.disconnect();
+                    mouseFragment.connect();
+                    Toast.makeText(MainActivity.this,"다시 연결되었습니다.",Toast.LENGTH_SHORT).show();
+                }
+                else if(currentMenuId == R.id.keyboard_nav)
+                {
+                    keyboardFragment.disconnect();
+                    keyboardFragment.connect();
+                    Toast.makeText(MainActivity.this,"다시 연결되었습니.",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP)
         {
@@ -84,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
         int id = menuItem.getItemId();
+        currentMenuId = id;
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (id == R.id.setting_nav) {
