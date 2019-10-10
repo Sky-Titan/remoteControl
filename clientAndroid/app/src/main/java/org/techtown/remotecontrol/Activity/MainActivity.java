@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 {
                     keyboardFragment.disconnect();
                     keyboardFragment.connect();
-                    Toast.makeText(MainActivity.this,"다시 연결되었습니.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this,"다시 연결되었습니다.",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         keycodes.add(521);//plus '+'
         keyNames.add("+");
         keycodes.add(92);//backslash '\'
-        keyNames.add("Back Slash '\'");
+        keyNames.add("Back Slash");
         keycodes.add(59);// semi colon ';'
         keyNames.add(";");
         keycodes.add(91);//open bricket '['
