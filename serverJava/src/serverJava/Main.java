@@ -3,6 +3,7 @@ package serverJava;
 import java.awt.FlowLayout;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -18,7 +19,7 @@ public class Main{
 	
 	public static void main(String[] args) {
 		
-		Setting setting = new Setting();
+		//Setting setting = new Setting();
 
 	}
 }
