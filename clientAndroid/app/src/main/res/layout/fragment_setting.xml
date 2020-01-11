@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,8 +11,15 @@
         android:layout_marginHorizontal="50dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
+        <Switch
+            android:id="@+id/bluetooth_switch"
+            android:text="블루투스 연결   "
+            android:layout_gravity="right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"/>
 
         <LinearLayout
             android:id="@+id/socket_connect_layout"
@@ -64,16 +71,18 @@
         <LinearLayout
             android:id="@+id/bluetooth_connect_layout"
             android:orientation="vertical"
+            android:visibility="gone"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageButton
+            <Button
                 android:id="@+id/bluetooth_button"
-                android:src="@drawable/ic_bluetooth_connected_black_48dp"
-                android:background="@color/transparent"
+                android:text="블루투스 켜기"
+                android:background="@drawable/ripple_lime_green"
                 android:layout_gravity="center"
-                android:visibility="gone"
-                android:layout_width="wrap_content"
+                android:textColor="@color/white"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
@@ -139,4 +148,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

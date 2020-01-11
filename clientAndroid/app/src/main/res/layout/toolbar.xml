@@ -36,7 +36,7 @@
         <ImageButton
             android:id="@+id/autonew_btn"
             android:layout_gravity="right|center_vertical"
-            android:background="@color/transparent"
+            android:background="?android:attr/selectableItemBackground"
             android:src="@drawable/ic_autorenew_white_36dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

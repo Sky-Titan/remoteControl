@@ -2,9 +2,12 @@ package org.techtown.remotecontrol;
 
 import android.app.Application;
 
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class Myapplication extends Application {
+
+    private Socket socket;
 
     private String ip = "";
     private int port = 0;
@@ -17,6 +20,14 @@ public class Myapplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public void setSocket(Socket socket) {
+        this.socket = socket;
     }
 
     public ArrayList<KeyboardItem> getKeyboardItemlist() {

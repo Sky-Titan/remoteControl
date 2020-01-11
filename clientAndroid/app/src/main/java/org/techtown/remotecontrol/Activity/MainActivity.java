@@ -12,6 +12,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +27,9 @@ import org.techtown.remotecontrol.KeyboardItem;
 import org.techtown.remotecontrol.Myapplication;
 import org.techtown.remotecontrol.R;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
@@ -34,11 +39,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     SettingFragment settingFragment;
     MouseFragment mouseFragment;
 
+    private static final String TAG = "MainActivity";
+
+    ObjectOutputStream outputStream;
+    ObjectInputStream inputStream;
+    int port ;
+    String ip = "";
+    Socket sock=null;
+
     ArrayList<KeyboardItem> keyboardItemList = new ArrayList<>();
     int currentMenuId=R.id.setting_nav;//처음 선택되어있는 메뉴 아이디는 setting메뉴
     DrawerLayout drawer;
 
     Myapplication app;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         autonew_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toast.makeText(MainActivity.this,"클릭",Toast.LENGTH_SHORT).show();
                 if(currentMenuId == R.id.mouse_nav)//마우스 연결 새로고침
                 {
                     mouseFragment.disconnect();
@@ -128,7 +143,69 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    public void disconnect()
+    {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
 
+                Log.d(TAG,"disconnect");
+                String code = app.getCertifyNumber();
+                try {
+                    outputStream = new ObjectOutputStream(sock.getOutputStream());
+                    outputStream.writeObject("MOUSE FINISH"+"&"+code);
+                    outputStream.flush();
+
+                    inputStream = new ObjectInputStream(sock.getInputStream());
+                    Object object = inputStream.readObject();
+                    if (!sock.isClosed() && sock != null && object.toString().equals("OK"))
+                        sock.close();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        thread.start();
+    }
+    public void connect()
+    {
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                Log.d(TAG,"connect");
+
+                try
+                {
+                    ip = app.getIp();
+                    port = app.getPort();
+
+                    sock = new Socket(ip,port);//소켓 염
+
+                    String code = app.getCertifyNumber();
+
+                    outputStream = new ObjectOutputStream(sock.getOutputStream());
+                    outputStream.writeObject("MOUSE START"+"&" + code);
+                    outputStream.flush();
+
+                    inputStream = new ObjectInputStream(sock.getInputStream());
+                    Object object = inputStream.readObject();
+                    Toast.makeText(MainActivity.this,object.toString(),Toast.LENGTH_SHORT).show();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+
+            }
+        });
+        thread.start();
+    }
     public void BasicKeyListSetting()//기본 키리스트 세팅
     {
         ArrayList<Integer> keycodes = new ArrayList<>();

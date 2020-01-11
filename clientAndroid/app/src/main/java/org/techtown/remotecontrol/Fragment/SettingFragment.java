@@ -9,8 +9,13 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
+import android.widget.Switch;
 
 import org.techtown.remotecontrol.Myapplication;
 import org.techtown.remotecontrol.R;
@@ -25,6 +30,8 @@ public class SettingFragment extends Fragment {
     private String TAG = "SettingFragment";
 
     NumberPicker mouseSensitivity, mouseWheelSensitivity;
+
+    LinearLayout socket_layout, bluetooth_layout;
 
     EditText ip_address;
     EditText port_number;
@@ -163,6 +170,38 @@ public class SettingFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
 
+            }
+        });
+
+        socket_layout = (LinearLayout)view.findViewById(R.id.socket_connect_layout);
+        bluetooth_layout = (LinearLayout)view.findViewById(R.id.bluetooth_connect_layout);
+
+        //나타나는 애니메이션
+        final Animation animation = new AlphaAnimation(0, 1);
+        animation.setDuration(300);
+        //사라지는 애니메이션
+        final Animation animation2 = new AlphaAnimation(1, 0);
+        animation2.setDuration(300);
+
+        Switch bluetooth_switch = (Switch)view.findViewById(R.id.bluetooth_switch);
+        bluetooth_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b)//체크면 블루투스 연결
+                {
+                    socket_layout.startAnimation(animation2);
+                    bluetooth_layout.startAnimation(animation);
+                    bluetooth_layout.setVisibility(View.VISIBLE);
+                    socket_layout.setVisibility(View.GONE);
+
+                }
+                else {//체크안되있으면 소켓 연결
+                    socket_layout.startAnimation(animation);
+                    bluetooth_layout.startAnimation(animation2);
+                    bluetooth_layout.setVisibility(View.GONE);
+                    socket_layout.setVisibility(View.VISIBLE);
+
+                }
             }
         });
         return view;
