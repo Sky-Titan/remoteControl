@@ -47,7 +47,6 @@ public class MouseFragment extends Fragment {
 
     String msg_1="";//서버에서 받은 리턴 메시지
 
-    boolean isFinished = true ; //스레드 여러 개 생성 못하게 하기 위한 장치
 
     Button left,wheel,right;
     Button wheel_up,wheel_down,wheel_bar;
@@ -66,6 +65,10 @@ public class MouseFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_mouse, container, false);
 
         Log.d(TAG,"onCreateView");
+
+        myapplication = (Myapplication)getActivity().getApplication();
+
+        sock = myapplication.getSocket();
 
         wheel_up = (Button) view.findViewById(R.id.mouse_wheel_up);//마우스 휠 업
         wheel_up.setOnClickListener(new View.OnClickListener() {
@@ -104,11 +107,8 @@ public class MouseFragment extends Fragment {
 
                         first_wheel_Y = current_wheel_Y;
 
-                        if(isFinished)
-                        {
-                            sendEvent("MOUSE WHEEL DRAG");//drag 신호 보냄
-                            isFinished=false;
-                        }
+                        sendEvent("MOUSE WHEEL DRAG");//drag 신호 보냄
+
                         break;
                     case MotionEvent.ACTION_DOWN://터치 했을 때 좌표
                         first_wheel_Y = (int) motionEvent.getY();//첫 터치한 Y 좌표
@@ -215,11 +215,8 @@ public class MouseFragment extends Fragment {
                         first_X = current_X;
                         first_Y = current_Y;
 
-                        if(isFinished)
-                        {
-                            sendEvent("MOUSE DRAG");//drag 신호 보냄
-                            isFinished=false;
-                        }
+                        sendEvent("MOUSE DRAG");//drag 신호 보냄
+
                         break;
                     case MotionEvent.ACTION_DOWN://터치 했을 때 좌표
                         first_X = (int) motionEvent.getX();//첫 터치한 X 좌표
@@ -233,85 +230,9 @@ public class MouseFragment extends Fragment {
                 return true;//무조건 true!!
             }
         });
-        myapplication = (Myapplication)getActivity().getApplication();
-        connect();
 
         return view;
     }
-
-
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG,"onDestroy");
-        disconnect();
-    }
-
-    public void disconnect()
-    {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                Log.d(TAG,"disconnect");
-                String code = myapplication.getCertifyNumber();
-                try {
-                    outputStream = new ObjectOutputStream(sock.getOutputStream());
-                    outputStream.writeObject("MOUSE FINISH"+"&"+code);
-                    outputStream.flush();
-
-                    inputStream = new ObjectInputStream(sock.getInputStream());
-                    Object object = inputStream.readObject();
-                    if (!sock.isClosed() && sock != null && object.toString().equals("OK"))
-                        sock.close();
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-        thread.start();
-    }
-    public void connect()
-    {
-
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                Log.d(TAG,"connect");
-
-                try
-                {
-                    ip = myapplication.getIp();
-                    port = myapplication.getPort();
-
-                    sock = new Socket(ip,port);//소켓 염
-
-                    String code = myapplication.getCertifyNumber();
-
-                    outputStream = new ObjectOutputStream(sock.getOutputStream());
-                    outputStream.writeObject("MOUSE START"+"&" + code);
-                    outputStream.flush();
-
-                    inputStream = new ObjectInputStream(sock.getInputStream());
-                    Object object = inputStream.readObject();
-                    Toast.makeText(getContext(),object.toString(),Toast.LENGTH_SHORT).show();
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-
-
-            }
-        });
-        thread.start();
-    }
-
 
     public void sendEvent(final String motion)
     {
@@ -328,6 +249,7 @@ public class MouseFragment extends Fragment {
 
                     String code = myapplication.getCertifyNumber();
 
+                    sock = myapplication.getSocket();
 
 
                     outputStream = new ObjectOutputStream(sock.getOutputStream());
@@ -360,7 +282,6 @@ public class MouseFragment extends Fragment {
                     msg_1 = String.valueOf(inputStream.readObject());//서버에서 돌려받은 메시지
                     outputStream.flush();
 
-                    isFinished=true;
                 }
                 catch (Exception e)
                 {
@@ -374,10 +295,10 @@ public class MouseFragment extends Fragment {
                         catch (Exception ex)
                         {
                             ex.printStackTrace();
-                            isFinished=true;
+
                         }
                     }
-                    isFinished=true;
+
                     return ;
 
                 }

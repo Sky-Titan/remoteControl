@@ -51,14 +51,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     int currentMenuId=R.id.setting_nav;//처음 선택되어있는 메뉴 아이디는 setting메뉴
     DrawerLayout drawer;
 
-    Myapplication app;
+    Myapplication myapplication;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        app = (Myapplication) getApplication();
+        myapplication = (Myapplication) getApplication();
         BasicKeyListSetting();//키리스트 세팅
 
         settingFragment = new SettingFragment();
@@ -69,19 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         autonew_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this,"클릭",Toast.LENGTH_SHORT).show();
-                if(currentMenuId == R.id.mouse_nav)//마우스 연결 새로고침
-                {
-                    mouseFragment.disconnect();
-                    mouseFragment.connect();
-                    Toast.makeText(MainActivity.this,"다시 연결되었습니다.",Toast.LENGTH_SHORT).show();
-                }
-                else if(currentMenuId == R.id.keyboard_nav)
-                {
-                    keyboardFragment.disconnect();
-                    keyboardFragment.connect();
-                    Toast.makeText(MainActivity.this,"다시 연결되었습니다.",Toast.LENGTH_SHORT).show();
-                }
+                reconnect();
             }
         });
 
@@ -108,6 +96,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fragmentManager.beginTransaction().replace(R.id.content_home, settingFragment).commit();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG,"onDestroy");
+        disconnect();
+    }
 
     @Override
     public void onBackPressed() {
@@ -143,6 +137,83 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public void reconnect()//재연결
+    {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                Log.d(TAG,"disconnect");
+                String code = myapplication.getCertifyNumber();
+
+                sock = myapplication.getSocket();
+
+                if(sock!=null)//기존 연결 있을경우에만
+                {
+                    try {
+                        //연결 해제
+                        outputStream = new ObjectOutputStream(sock.getOutputStream());
+                        outputStream.writeObject("FINISH"+"&"+code);
+                        outputStream.flush();
+
+                        inputStream = new ObjectInputStream(sock.getInputStream());
+                        Object object = inputStream.readObject();
+                        if (!sock.isClosed() && sock != null && object.toString().equals("OK"))
+                            sock.close();
+
+                        sock=null;
+
+
+                        //연결
+                        ip = myapplication.getIp();
+                        port = myapplication.getPort();
+
+                        sock = new Socket(ip,port);//소켓 염
+
+                        myapplication.setSocket(sock);//전역변수로 등록
+
+                        code = myapplication.getCertifyNumber();
+
+                        outputStream = new ObjectOutputStream(sock.getOutputStream());
+                        outputStream.writeObject("START"+"&" + code);
+                        outputStream.flush();
+
+                        inputStream = new ObjectInputStream(sock.getInputStream());
+
+                        object = inputStream.readObject();
+
+                        final String str = object.toString();
+                        System.out.println("object : "+object.toString());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                final Toast toast = Toast.makeText(MainActivity.this,str,Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                        });
+
+
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                else
+                {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this,"기존 연결이 없습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+            }
+        });
+        thread.start();
+    }
     public void disconnect()
     {
         Thread thread = new Thread(new Runnable() {
@@ -150,21 +221,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void run() {
 
                 Log.d(TAG,"disconnect");
-                String code = app.getCertifyNumber();
-                try {
-                    outputStream = new ObjectOutputStream(sock.getOutputStream());
-                    outputStream.writeObject("MOUSE FINISH"+"&"+code);
-                    outputStream.flush();
+                String code = myapplication.getCertifyNumber();
 
-                    inputStream = new ObjectInputStream(sock.getInputStream());
-                    Object object = inputStream.readObject();
-                    if (!sock.isClosed() && sock != null && object.toString().equals("OK"))
-                        sock.close();
-                }
-                catch (Exception e)
+                sock = myapplication.getSocket();
+
+                if(sock!=null)
                 {
-                    e.printStackTrace();
+                    try {
+
+                        outputStream = new ObjectOutputStream(sock.getOutputStream());
+                        outputStream.writeObject("FINISH"+"&"+code);
+                        outputStream.flush();
+
+                        inputStream = new ObjectInputStream(sock.getInputStream());
+                        Object object = inputStream.readObject();
+                        if (!sock.isClosed() && sock != null && object.toString().equals("OK"))
+                            sock.close();
+
+                        sock=null;
+                        myapplication.setSocket(sock);
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
                 }
+
 
             }
         });
@@ -181,27 +263,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 try
                 {
-                    ip = app.getIp();
-                    port = app.getPort();
+                    ip = myapplication.getIp();
+                    port = myapplication.getPort();
 
                     sock = new Socket(ip,port);//소켓 염
 
-                    String code = app.getCertifyNumber();
+                    myapplication.setSocket(sock);//전역변수로 등록
+
+                    String code = myapplication.getCertifyNumber();
 
                     outputStream = new ObjectOutputStream(sock.getOutputStream());
-                    outputStream.writeObject("MOUSE START"+"&" + code);
+                    outputStream.writeObject("START"+"&" + code);
                     outputStream.flush();
 
                     inputStream = new ObjectInputStream(sock.getInputStream());
-                    Object object = inputStream.readObject();
-                    Toast.makeText(MainActivity.this,object.toString(),Toast.LENGTH_SHORT).show();
+
+                    final Object object = inputStream.readObject();
+                    System.out.println("object : "+object.toString());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final Toast toast = Toast.makeText(MainActivity.this,object.toString(),Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                    });
+
                 }
                 catch (Exception e)
                 {
                     e.printStackTrace();
                 }
-
-
             }
         });
         thread.start();
@@ -348,6 +439,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             keyboardItem.setTAG("Function Key");
             keyboardItemList.add(keyboardItem);
         }
-        app.setKeyboardItemlist(keyboardItemList);//전역변수로 설정정
+        myapplication.setKeyboardItemlist(keyboardItemList);//전역변수로 설정정
     }
 }

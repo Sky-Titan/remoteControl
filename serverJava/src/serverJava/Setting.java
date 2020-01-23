@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.EOFException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -37,7 +39,8 @@ public class Setting extends JFrame
 	private JButton connect;
 	private JLabel client_ip,client_ip2, client_port,client_port2;
 	private JLabel receive_info,receive_info2;
-	ServerSocket serverSocket;
+	private Socket sock;
+	private ServerSocket serverSocket;
 	int count = 0;
 	
 	public Setting() {
@@ -45,7 +48,28 @@ public class Setting extends JFrame
 		
 		setLocation(550, 230);
 		setSize(300, 500);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			
+			@Override
+			public void windowClosing(WindowEvent e) {
+				// TODO Auto-generated method stub
+				super.windowClosing(e);
+				try
+				{
+					ObjectOutputStream outputStream = new ObjectOutputStream(sock.getOutputStream());
+					outputStream.writeObject("연결 종료");
+					outputStream.flush();
+					sock.close();
+				}
+				catch (Exception exception) {
+					// TODO: handle exception
+					exception.printStackTrace();
+				}
+				
+				System.exit(0);
+			}
+		});
 		setLayout(null);
 		
 	
@@ -119,7 +143,7 @@ public class Setting extends JFrame
 			Robot robot = new Robot();
 			while(true)
 			{
-				Socket sock = serverSocket.accept();
+				sock = serverSocket.accept();
 				InetAddress clientHost = sock.getLocalAddress();
 				int clientPort = sock.getPort();
 				System.out.println("Client connect host : "+clientHost+" port: "+clientPort);
@@ -163,10 +187,16 @@ public class Setting extends JFrame
 					client_port2.setText(clientPort+"");
 				}
 				
-				if(key.equals("KEYBOARD START"))
+				if(key.equals("START"))
 				{
+					ObjectOutputStream outputStream = new ObjectOutputStream(sock.getOutputStream());
+					outputStream.writeObject("연결 시작");
+					outputStream.flush();
+					
 					while(true)
 					{
+						if(sock.isClosed() || !sock.isConnected())
+							break;
 						inputStream = new ObjectInputStream(sock.getInputStream());
 						obj = inputStream.readObject();
 					
@@ -273,21 +303,80 @@ public class Setting extends JFrame
 						{
 							robot.keyRelease(KeyEvent.VK_DOWN);
 						}
-						else if(key.equals("KEYBOARD FINISH"))
+				/*		else if(key.equals("KEYBOARD FINISH"))
 						{
 							ObjectOutputStream outputStream = new ObjectOutputStream(sock.getOutputStream());
 							outputStream.writeObject("OK");
 							outputStream.flush();
 							sock.close();
 							break;
+						}*/
+						else if(key.equals("MOUSE DRAG"))//마우스 커서 드래그
+						{
+							String position = strtok.nextToken();
+							strtok = new StringTokenizer(position,"|");
+							
+							int x = Integer.parseInt(strtok.nextToken());
+							int y = Integer.parseInt(strtok.nextToken());
+							
+							PointerInfo pointerInfo = MouseInfo.getPointerInfo();
+							
+							robot.mouseMove(x + (int)pointerInfo.getLocation().getX(), y + (int)pointerInfo.getLocation().getY());
 						}
-						ObjectOutputStream outputStream = new ObjectOutputStream(sock.getOutputStream());
+						else if(key.equals("MOUSE LEFT PRESS"))//마우스 왼쪽 버튼 누름
+						{
+							robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+						}
+						else if(key.equals("MOUSE LEFT RELEASE"))//마우스 왼쪽 버튼 떼기
+						{
+							robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+						}
+						else if(key.equals("MOUSE WHEEL PRESS"))//마우스 휠 버튼 누름
+						{
+							robot.mousePress(InputEvent.BUTTON2_DOWN_MASK);
+						}
+						else if(key.equals("MOUSE WHEEL RELEASE"))//마우스 휠 버튼 떼기
+						{
+							robot.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
+						}
+						else if(key.equals("MOUSE RIGHT PRESS"))//마우스 오른쪽 버튼 누름
+						{
+							robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
+						}
+						else if(key.equals("MOUSE RIGHT RELEASE"))//마우스 오른쪽 버튼 떼기
+						{
+							robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
+						}
+						else if(key.equals("MOUSE WHEEL UP"))//마우스 휠 업
+						{
+							int sensitivity = Integer.parseInt(strtok.nextToken());
+							robot.mouseWheel(-1 * sensitivity); //1은 기본 이동값
+						}
+						else if(key.equals("MOUSE WHEEL DOWN"))//마우스 휠 다운
+						{
+							int sensitivity = Integer.parseInt(strtok.nextToken());
+							robot.mouseWheel(1 * sensitivity);//1은 기본이동값
+						}
+						else if(key.equals("MOUSE WHEEL DRAG"))//마우스 휠 드래그
+						{
+							int move = Integer.parseInt(strtok.nextToken());
+							robot.mouseWheel(move);
+						}
+						else if(key.equals("FINISH"))
+						{
+							outputStream = new ObjectOutputStream(sock.getOutputStream());
+							outputStream.writeObject("연결 종료");
+							outputStream.flush();
+							sock.close();
+							break;
+						}
+						outputStream = new ObjectOutputStream(sock.getOutputStream());
 						outputStream.writeObject(key+" Complete from server");
 						outputStream.flush();
 					}
 				}
 			
-				else if(key.equals("MOUSE START")) //마우스 시작~~~
+		/*		else if(key.equals("MOUSE START")) //마우스 시작~~~
 				{
 				
 					while(true)
@@ -377,7 +466,7 @@ public class Setting extends JFrame
 						outputStream.writeObject(key+" Complete from server");
 						outputStream.flush();
 					}
-				}
+				}*/
 				
 			}
 		

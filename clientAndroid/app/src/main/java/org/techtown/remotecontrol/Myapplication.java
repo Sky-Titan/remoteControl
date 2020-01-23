@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Myapplication extends Application {
 
-    private Socket socket;
+    private Socket socket=null;
 
     private String ip = "";
     private int port = 0;

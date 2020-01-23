@@ -56,6 +56,7 @@ public class KeyboardFragment extends Fragment implements View.OnTouchListener {
         view =inflater.inflate(R.layout.fragment_keyboard, container, false);
 
 
+
         Button enter_btn = (Button) view.findViewById(R.id.enter_btn);
         enter_btn.setOnTouchListener(this);//ENTER버튼 클릭
 
@@ -87,78 +88,12 @@ public class KeyboardFragment extends Fragment implements View.OnTouchListener {
         left_btn.setOnTouchListener(this);
 
         myapplication = (Myapplication)getActivity().getApplication();
-        connect();
+        sock = myapplication.getSocket();
 
         return view;
     }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(TAG,"onDestroy");
-        disconnect();
-    }
 
-    public void disconnect()
-    {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
 
-                Log.d(TAG,"disconnect");
-                String code = myapplication.getCertifyNumber();
-                try {
-                    outputStream = new ObjectOutputStream(sock.getOutputStream());
-                    outputStream.writeObject("KEYBOARD FINISH"+"&"+code);
-                    outputStream.flush();
-
-                    inputStream = new ObjectInputStream(sock.getInputStream());
-                    Object object = inputStream.readObject();
-                    if (!sock.isClosed() && sock != null && object.toString().equals("OK"))
-                        sock.close();
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-        thread.start();
-    }
-    public void connect()
-    {
-
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                Log.d(TAG,"connect");
-                // Myapplication myapplication = (Myapplication)getActivity().getApplication();
-                try
-                {
-                    ip = myapplication.getIp();
-                    port = myapplication.getPort();
-
-                    sock = new Socket(ip,port);//소켓 염
-
-                    String code = myapplication.getCertifyNumber();
-
-                    outputStream = new ObjectOutputStream(sock.getOutputStream());
-                    outputStream.writeObject("KEYBOARD START"+"&" + code);
-                    outputStream.flush();
-
-                    inputStream = new ObjectInputStream(sock.getInputStream());
-                    Object object = inputStream.readObject();
-                    Toast.makeText(getContext(),object.toString(),Toast.LENGTH_SHORT).show();
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread.start();
-    }
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         int eventaction = motionEvent.getAction();
@@ -196,6 +131,8 @@ public class KeyboardFragment extends Fragment implements View.OnTouchListener {
 
                 try
                 {
+
+                    sock = myapplication.getSocket();
                     ip = myapplication.getIp();
                     port = myapplication.getPort();
                     String code = myapplication.getCertifyNumber();

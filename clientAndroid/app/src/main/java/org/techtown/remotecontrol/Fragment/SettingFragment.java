@@ -1,24 +1,32 @@
 package org.techtown.remotecontrol.Fragment;
 
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import org.techtown.remotecontrol.Myapplication;
 import org.techtown.remotecontrol.R;
+
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,7 +36,7 @@ public class SettingFragment extends Fragment {
     View view;
 
     private String TAG = "SettingFragment";
-
+    Myapplication myapplication;
     NumberPicker mouseSensitivity, mouseWheelSensitivity;
 
     LinearLayout socket_layout, bluetooth_layout;
@@ -39,7 +47,17 @@ public class SettingFragment extends Fragment {
 
     SharedPreferences sf;
 
-    Myapplication myapplication;
+    ObjectOutputStream outputStream;
+    ObjectInputStream inputStream;
+    int port ;
+    String ip = "";
+    Socket sock;
+
+    String msg_1="";//서버에서 받은 리턴 메시지
+
+    Context context;
+
+    Button socket_connect_btn;
 
     public SettingFragment() {
         // Required empty public constructor
@@ -51,6 +69,7 @@ public class SettingFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_setting, container, false);
 
+        context = container.getContext();
         myapplication = (Myapplication)getActivity().getApplication();
 
         mouseSensitivity = (NumberPicker) view.findViewById(R.id.mouse_sensitivity_picker);
@@ -204,7 +223,105 @@ public class SettingFragment extends Fragment {
                 }
             }
         });
+
+        socket_connect_btn = (Button)view.findViewById(R.id.socket_connect_button);
+        socket_connect_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sock = myapplication.getSocket();
+                if(sock==null) {//연결
+                    connect();
+
+                }
+                else {
+                    disconnect();
+
+                }
+
+            }
+        });
+
         return view;
     }
+    public void disconnect()
+    {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
 
+                Log.d(TAG,"disconnect");
+                String code = myapplication.getCertifyNumber();
+                try {
+                    outputStream = new ObjectOutputStream(sock.getOutputStream());
+                    outputStream.writeObject("FINISH"+"&"+code);
+                    outputStream.flush();
+
+                    inputStream = new ObjectInputStream(sock.getInputStream());
+                    final Object object = inputStream.readObject();
+                    System.out.println("object : "+object.toString());
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(context,object.toString(),Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    if (!sock.isClosed() && sock != null && object.toString().equals("OK"))
+                        sock.close();
+                    socket_connect_btn.setText("연결 하기");
+                    myapplication.setSocket(null);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        thread.start();
+    }
+    public void connect()
+    {
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                Log.d(TAG,"connect");
+
+                try
+                {
+                    ip = myapplication.getIp();
+                    port = myapplication.getPort();
+
+                    sock = new Socket(ip,port);//소켓 염
+
+                    myapplication.setSocket(sock);//전역변수로 등록
+
+                    String code = myapplication.getCertifyNumber();
+
+                    outputStream = new ObjectOutputStream(sock.getOutputStream());
+                    outputStream.writeObject("START"+"&" + code);
+                    outputStream.flush();
+
+                    inputStream = new ObjectInputStream(sock.getInputStream());
+
+                    final Object object = inputStream.readObject();
+                    System.out.println("object : "+object.toString());
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            final Toast toast = Toast.makeText(context,object.toString(),Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                    });
+                    socket_connect_btn.setText("연결 끊기");
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+    }
 }
