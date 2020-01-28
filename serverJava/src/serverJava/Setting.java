@@ -11,7 +11,9 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
 import java.io.EOFException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -19,6 +21,7 @@ import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
@@ -57,10 +60,10 @@ public class Setting extends JFrame
 				super.windowClosing(e);
 				try
 				{
-					ObjectOutputStream outputStream = new ObjectOutputStream(sock.getOutputStream());
-					outputStream.writeObject("연결 종료");
-					outputStream.flush();
-					sock.close();
+				//	ObjectOutputStream outputStream = new ObjectOutputStream(sock.getOutputStream());
+			//		outputStream.writeObject("연결 종료");
+			//		outputStream.flush();
+				//	sock.close();
 				}
 				catch (Exception exception) {
 					// TODO: handle exception
@@ -94,11 +97,27 @@ public class Setting extends JFrame
 		certify_number.setBackground(Color.WHITE);
 		add(certify_number);
 	
-		client_ip = new JLabel("클라이언트 ip :");
+		client_ip = new JLabel("외부 ip :");
 		client_ip.setBounds(80, 230, 150, 30);
 		add(client_ip);
 		
-		client_ip2 = new JLabel("x");
+		String currentIp="x";
+		
+		try
+		{
+			URL whatismyip = new URL("http://checkip.amazonaws.com");
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+			                whatismyip.openStream()));
+			currentIp = in.readLine(); //you get the IP as a String
+		
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		
+		client_ip2 = new JLabel(currentIp);
 		client_ip2.setBounds(80, 250, 150, 30);
 		add(client_ip2);
 		
