@@ -21,6 +21,7 @@ import android.widget.NumberPicker;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import org.techtown.SocketLibrary;
 import org.techtown.remotecontrol.Myapplication;
 import org.techtown.remotecontrol.R;
 
@@ -47,13 +48,10 @@ public class SettingFragment extends Fragment {
 
     SharedPreferences sf;
 
-    ObjectOutputStream outputStream;
-    ObjectInputStream inputStream;
-    int port ;
-    String ip = "";
     Socket sock;
 
-    String msg_1="";//서버에서 받은 리턴 메시지
+    SocketLibrary socketLibrary;
+
 
     Context context;
 
@@ -71,6 +69,8 @@ public class SettingFragment extends Fragment {
 
         context = container.getContext();
         myapplication = (Myapplication)getActivity().getApplication();
+
+        socketLibrary = new SocketLibrary(myapplication);
 
         mouseSensitivity = (NumberPicker) view.findViewById(R.id.mouse_sensitivity_picker);
         mouseSensitivity.setMinValue(1);
@@ -230,12 +230,13 @@ public class SettingFragment extends Fragment {
             public void onClick(View view) {
                 sock = myapplication.getSocket();
                 if(sock==null) {//연결
-                    connect();
+                    //connect();
+                    socketLibrary.connect(context,getActivity());
 
                 }
                 else {
-                    disconnect();
-
+                    //disconnect();
+                    socketLibrary.disconnect(context,getActivity());
                 }
 
             }
@@ -243,85 +244,11 @@ public class SettingFragment extends Fragment {
 
         return view;
     }
-    public void disconnect()
+
+    public void changeConnectBtnText(String changeText)//connect 버튼 텍스트 변경
     {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                Log.d(TAG,"disconnect");
-                String code = myapplication.getCertifyNumber();
-                try {
-                    outputStream = new ObjectOutputStream(sock.getOutputStream());
-                    outputStream.writeObject("FINISH"+"&"+code);
-                    outputStream.flush();
-
-                    inputStream = new ObjectInputStream(sock.getInputStream());
-                    final Object object = inputStream.readObject();
-                    System.out.println("object : "+object.toString());
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(context,object.toString(),Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    if (!sock.isClosed() && sock != null && object.toString().equals("OK"))
-                        sock.close();
-                    socket_connect_btn.setText("연결 하기");
-                    myapplication.setSocket(null);
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-        thread.start();
+        socket_connect_btn.setText(changeText);
     }
-    public void connect()
-    {
 
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
 
-                Log.d(TAG,"connect");
-
-                try
-                {
-                    ip = myapplication.getIp();
-                    port = myapplication.getPort();
-
-                    sock = new Socket(ip,port);//소켓 염
-
-                    myapplication.setSocket(sock);//전역변수로 등록
-
-                    String code = myapplication.getCertifyNumber();
-
-                    outputStream = new ObjectOutputStream(sock.getOutputStream());
-                    outputStream.writeObject("START"+"&" + code);
-                    outputStream.flush();
-
-                    inputStream = new ObjectInputStream(sock.getInputStream());
-
-                    final Object object = inputStream.readObject();
-                    System.out.println("object : "+object.toString());
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            final Toast toast = Toast.makeText(context,object.toString(),Toast.LENGTH_SHORT);
-                            toast.show();
-                        }
-                    });
-                    socket_connect_btn.setText("연결 끊기");
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread.start();
-    }
 }

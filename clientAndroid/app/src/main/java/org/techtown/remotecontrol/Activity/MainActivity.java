@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import org.techtown.SocketLibrary;
 import org.techtown.remotecontrol.Fragment.KeyboardFragment;
 import org.techtown.remotecontrol.Fragment.MouseFragment;
 import org.techtown.remotecontrol.Fragment.SettingFragment;
@@ -41,15 +42,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final String TAG = "MainActivity";
 
-    ObjectOutputStream outputStream;
-    ObjectInputStream inputStream;
-    int port ;
-    String ip = "";
-    Socket sock=null;
-
     ArrayList<KeyboardItem> keyboardItemList = new ArrayList<>();
     int currentMenuId=R.id.setting_nav;//처음 선택되어있는 메뉴 아이디는 setting메뉴
     DrawerLayout drawer;
+
+    SocketLibrary socketLibrary;
 
     Myapplication myapplication;
 
@@ -61,15 +58,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         myapplication = (Myapplication) getApplication();
         BasicKeyListSetting();//키리스트 세팅
 
+        socketLibrary = new SocketLibrary(myapplication);
+
         settingFragment = new SettingFragment();
         keyboardFragment = new KeyboardFragment();
         mouseFragment = new MouseFragment();
+
+        //전역 변수로 설정
+        myapplication.setSettingFragment(settingFragment);
+        myapplication.setKeyboardFragment(keyboardFragment);
+        myapplication.setMouseFragment(mouseFragment);
 
         ImageButton autonew_btn = (ImageButton) findViewById(R.id.autonew_btn);//새로고침 버튼
         autonew_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                reconnect();
+                socketLibrary.reconnect(getApplicationContext(),MainActivity.this);
             }
         });
 
@@ -100,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG,"onDestroy");
-        disconnect();
+        socketLibrary.disconnect(getApplicationContext(),this);
     }
 
     @Override
@@ -138,165 +142,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void reconnect()//재연결
-    {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
 
-                Log.d(TAG,"disconnect");
-                String code = myapplication.getCertifyNumber();
-
-                sock = myapplication.getSocket();
-
-                if(sock!=null)//기존 연결 있을경우에만
-                {
-                    try {
-                        //연결 해제
-                        outputStream = new ObjectOutputStream(sock.getOutputStream());
-                        outputStream.writeObject("FINISH"+"&"+code);
-                        outputStream.flush();
-
-                        inputStream = new ObjectInputStream(sock.getInputStream());
-                        Object object = inputStream.readObject();
-                        if (!sock.isClosed() && sock != null && object.toString().equals("OK"))
-                            sock.close();
-
-                        sock=null;
-
-
-                        //연결
-                        ip = myapplication.getIp();
-                        port = myapplication.getPort();
-
-                        sock = new Socket(ip,port);//소켓 염
-
-                        myapplication.setSocket(sock);//전역변수로 등록
-
-                        code = myapplication.getCertifyNumber();
-
-                        outputStream = new ObjectOutputStream(sock.getOutputStream());
-                        outputStream.writeObject("START"+"&" + code);
-                        outputStream.flush();
-
-                        inputStream = new ObjectInputStream(sock.getInputStream());
-
-                        object = inputStream.readObject();
-
-                        final String str = object.toString();
-                        System.out.println("object : "+object.toString());
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                final Toast toast = Toast.makeText(MainActivity.this,str,Toast.LENGTH_SHORT);
-                                toast.show();
-                            }
-                        });
-
-
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-                else
-                {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this,"기존 연결이 없습니다.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-            }
-        });
-        thread.start();
-    }
-    public void disconnect()
-    {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                Log.d(TAG,"disconnect");
-                String code = myapplication.getCertifyNumber();
-
-                sock = myapplication.getSocket();
-
-                if(sock!=null)
-                {
-                    try {
-
-                        outputStream = new ObjectOutputStream(sock.getOutputStream());
-                        outputStream.writeObject("FINISH"+"&"+code);
-                        outputStream.flush();
-
-                        inputStream = new ObjectInputStream(sock.getInputStream());
-                        Object object = inputStream.readObject();
-                        if (!sock.isClosed() && sock != null && object.toString().equals("OK"))
-                            sock.close();
-
-                        sock=null;
-                        myapplication.setSocket(sock);
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-
-
-            }
-        });
-        thread.start();
-    }
-    public void connect()
-    {
-
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                Log.d(TAG,"connect");
-
-                try
-                {
-                    ip = myapplication.getIp();
-                    port = myapplication.getPort();
-
-                    sock = new Socket(ip,port);//소켓 염
-
-                    myapplication.setSocket(sock);//전역변수로 등록
-
-                    String code = myapplication.getCertifyNumber();
-
-                    outputStream = new ObjectOutputStream(sock.getOutputStream());
-                    outputStream.writeObject("START"+"&" + code);
-                    outputStream.flush();
-
-                    inputStream = new ObjectInputStream(sock.getInputStream());
-
-                    final Object object = inputStream.readObject();
-                    System.out.println("object : "+object.toString());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            final Toast toast = Toast.makeText(MainActivity.this,object.toString(),Toast.LENGTH_SHORT);
-                            toast.show();
-                        }
-                    });
-
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread.start();
-    }
     public void BasicKeyListSetting()//기본 키리스트 세팅
     {
         ArrayList<Integer> keycodes = new ArrayList<>();

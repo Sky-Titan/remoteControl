@@ -105,7 +105,7 @@ public class Setting extends JFrame
 		
 		try
 		{
-			URL whatismyip = new URL("http://checkip.amazonaws.com");
+			URL whatismyip = new URL("http://checkip.amazonaws.com");// ip주소 가져오기
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 			                whatismyip.openStream()));
 			currentIp = in.readLine(); //you get the IP as a String
