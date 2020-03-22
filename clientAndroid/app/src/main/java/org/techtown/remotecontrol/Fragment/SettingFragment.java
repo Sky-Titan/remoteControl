@@ -62,6 +62,21 @@ public class SettingFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        System.out.println("resume");
+
+        if(myapplication.getSocket()==null)
+        {
+            socket_connect_btn.setText("연결하기");
+        }
+        else
+        {
+            socket_connect_btn.setText("연결끊기");
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -245,9 +260,16 @@ public class SettingFragment extends Fragment {
         return view;
     }
 
-    public void changeConnectBtnText(String changeText)//connect 버튼 텍스트 변경
+    public void changeConnectBtnText(final String changeText)//connect 버튼 텍스트 변경
     {
-        socket_connect_btn.setText(changeText);
+        System.out.println("바뀜");
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                socket_connect_btn.setText(changeText);
+            }
+        });
+
     }
 
 

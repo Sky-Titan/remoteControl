@@ -166,8 +166,15 @@ public class SocketLibrary {
                     if (!sock.isClosed() && sock != null && object.toString().equals("OK"))
                         sock.close();
 
-                    SettingFragment settingFragment = myapplication.getSettingFragment();
-                    settingFragment.changeConnectBtnText("연결 하기");
+
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            SettingFragment settingFragment = myapplication.getSettingFragment();
+                            settingFragment.changeConnectBtnText("연결 하기");
+                        }
+                    });
+
 
                     myapplication.setSocket(null);
                 }
@@ -220,8 +227,13 @@ public class SocketLibrary {
                     });
 
 
-                    SettingFragment settingFragment = myapplication.getSettingFragment();
-                    settingFragment.changeConnectBtnText("연결 끊기");
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            SettingFragment settingFragment = myapplication.getSettingFragment();
+                            settingFragment.changeConnectBtnText("연결 하기");
+                        }
+                    });
 
                 }
                 catch (Exception e)
