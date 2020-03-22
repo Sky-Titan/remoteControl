@@ -68,11 +68,11 @@ public class SettingFragment extends Fragment {
 
         if(myapplication.getSocket()==null)
         {
-            socket_connect_btn.setText("연결하기");
+            socket_connect_btn.setText("연결 하기");
         }
         else
         {
-            socket_connect_btn.setText("연결끊기");
+            socket_connect_btn.setText("연결 끊기");
         }
     }
 

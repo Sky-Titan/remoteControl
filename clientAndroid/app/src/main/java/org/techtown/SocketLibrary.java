@@ -231,7 +231,7 @@ public class SocketLibrary {
                         @Override
                         public void run() {
                             SettingFragment settingFragment = myapplication.getSettingFragment();
-                            settingFragment.changeConnectBtnText("연결 하기");
+                            settingFragment.changeConnectBtnText("연결 끊기");
                         }
                     });
 
