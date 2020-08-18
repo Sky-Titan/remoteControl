@@ -166,14 +166,54 @@ public class SocketLibrary {
                     if (!sock.isClosed() && sock != null && object.toString().equals("OK"))
                         sock.close();
 
-                    SettingFragment settingFragment = myapplication.getSettingFragment();
-                    settingFragment.changeConnectBtnText("연결 하기");
+
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            SettingFragment settingFragment = myapplication.getSettingFragment();
+                            settingFragment.changeConnectBtnText("연결 하기");
+                        }
+                    });
+
 
                     myapplication.setSocket(null);
                 }
                 catch (Exception e)
                 {
                     e.printStackTrace();
+
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(context,"소켓 연결 종료",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+
+                    if (!sock.isClosed() && sock != null)
+                    {
+                        try
+                        {
+                            sock.close();
+                        }
+                        catch (Exception ex)
+                        {
+                            ex.printStackTrace();
+                        }
+
+                    }
+
+
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            SettingFragment settingFragment = myapplication.getSettingFragment();
+                            settingFragment.changeConnectBtnText("연결 하기");
+                        }
+                    });
+
+
+                    myapplication.setSocket(null);
                 }
 
             }
@@ -220,8 +260,13 @@ public class SocketLibrary {
                     });
 
 
-                    SettingFragment settingFragment = myapplication.getSettingFragment();
-                    settingFragment.changeConnectBtnText("연결 끊기");
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            SettingFragment settingFragment = myapplication.getSettingFragment();
+                            settingFragment.changeConnectBtnText("연결 끊기");
+                        }
+                    });
 
                 }
                 catch (Exception e)
