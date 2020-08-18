@@ -4,15 +4,13 @@ package org.techtown.remotecontrol.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.view.KeyEvent;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.techtown.remotecontrol.KeyboardItem;
@@ -22,7 +20,6 @@ import org.techtown.remotecontrol.R;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
