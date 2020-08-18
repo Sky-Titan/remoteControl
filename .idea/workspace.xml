@@ -97,4 +97,14 @@
       <window_info anchor="right" id="Palette&#9;" order="2" />
     </layout>
   </component>
+  <component name="WindowStateProjectService">
+    <state x="707" y="230" key="RollbackChangesDialog" timestamp="1597752421351">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="707" y="230" key="RollbackChangesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1597752421351" />
+    <state x="727" y="223" key="VCS.ChangeListViewerDialog" timestamp="1597752417490">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="727" y="223" key="VCS.ChangeListViewerDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1597752417490" />
+  </component>
 </project>
